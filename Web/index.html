@@ -1,0 +1,1295 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HB9-MultiTiouner</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20%20viewBox%3D%220%200%2048%2048%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%2246%22%20height%3D%2246%22%20rx%3D%2211%22%20fill%3D%22%23e4b85b0c%22%20stroke%3D%22%236e5a35%22%2F%3E%3Cpath%20d%3D%22M8%2032h5l5-16%206%2020%206-20%205%2016h5%22%20stroke%3D%22%23e4b85b%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M8%2039h32%22%20stroke%3D%22%236e5a35%22%2F%3E%3Ccircle%20cx%3D%2218%22%20cy%3D%2210%22%20r%3D%221.5%22%20fill%3D%22%23e4b85b%22%2F%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2210%22%20r%3D%221.5%22%20fill%3D%22%23e4b85b%22%2F%3E%3C%2Fsvg%3E">
+  <link rel="stylesheet" href="/bootstrap.min.css">
+  <style>
+
+    :root{color-scheme:dark;--page:#101213;--panel:#191c1e;--line:#303537;--muted:#a6adaf;--mint:#89c7a4;--amber:#e4b85b;--ink:#eef0ec;--bs-body-bg:#101213;--bs-body-color:#eef0ec;--bs-border-color:#303537;--bs-secondary-color:#a6adaf}
+    *{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font-family:Segoe UI,system-ui,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
+    main.container-fluid{padding:14px 28px 24px!important;max-width:2200px;margin:auto}.muted{color:var(--muted)}
+    .navbar{display:flex;align-items:center;justify-content:space-between;gap:20px;background:transparent;border:0;border-radius:0;padding:0!important;margin-bottom:18px!important}
+    .navbar-brand{display:flex;align-items:center;gap:13px;margin:0;color:var(--ink);line-height:1.1}.brand-mark{width:48px;height:48px;flex-shrink:0}.brand-wordmark{display:flex;flex-direction:column;gap:7px}.brand-name{font-size:23px;font-weight:600;letter-spacing:-.035em}.brand-name .brand-prefix{color:var(--amber);font-weight:500;margin-right:7px;letter-spacing:0}.brand-version{margin-left:10px;padding:2px 8px;background:transparent;cursor:pointer;font:500 12px Consolas,monospace;letter-spacing:.02em;color:var(--amber);border:1px solid #6e5a35;border-radius:6px;vertical-align:middle}.brand-version[hidden]{display:none}.brand-version:hover{background:#e4b85b1f;border-color:var(--amber)}.brand-subtitle{font:11px Segoe UI,system-ui,sans-serif;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+    .navbar-status{display:flex;align-items:center;gap:20px}.navbar-status #summary{font-size:12px;color:#b6bdbb}.btn{font-size:13px;border-radius:7px;padding:8px 14px;box-shadow:none!important}.btn:focus-visible,button:focus-visible,summary:focus-visible,.video-frame:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+    .btn-success{--bs-btn-bg:#dfb35b;--bs-btn-border-color:#dfb35b;--bs-btn-color:#171914;--bs-btn-hover-bg:#edc777;--bs-btn-hover-border-color:#edc777;--bs-btn-hover-color:#101213;--bs-btn-active-bg:#d5a64d;--bs-btn-active-border-color:#d5a64d;--bs-btn-active-color:#101213;font-weight:600}
+    .btn-outline-danger{--bs-btn-color:#c4b7b2;--bs-btn-border-color:#4a3b37;--bs-btn-hover-bg:#3a2422;--bs-btn-hover-border-color:#a96d60;--bs-btn-hover-color:#f1c4b8;--bs-btn-disabled-color:#9a8d89;--bs-btn-disabled-border-color:#4a3b37}
+    .panel{padding:18px 20px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+    #spectrum-panel{margin-bottom:24px!important;background:var(--panel);border-color:var(--line);box-shadow:none}
+    .spectrum-heading{display:flex;align-items:center;gap:12px}.section-kicker{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
+    #spectrum-panel h2{font-size:14px;letter-spacing:.01em;font-weight:600;margin:0!important;color:var(--ink)}.spectrum-source{font:11px Consolas,monospace;color:var(--muted);padding-left:12px;border-left:1px solid #49504e}
+    #spectrum{display:block;width:100%;height:190px;background:#12120f;border:1px solid #4b422d;border-radius:5px;touch-action:none;margin-top:15px}
+    .spectrum-scale{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 16px;margin-top:11px;color:var(--muted);font:12px Consolas,monospace}.spectrum-scale strong{color:#dbcfb2;font-weight:400}#spectrumStatus{font-size:12px;color:var(--amber)}#spectrumStatus:empty{display:none}
+    #receiver-panel{margin-bottom:24px}.receiver-section-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}.receiver-section-heading{justify-content:flex-start;gap:12px}.receiver-section-heading h2{font-size:14px;letter-spacing:.01em;font-weight:600;margin:0;color:var(--ink);text-transform:none}.receiver-section-heading .spectrum-source{font-size:11px}.stats-row label{white-space:nowrap;font-size:10px;letter-spacing:.04em}
+    #receivers{--gap:18px;--cols:var(--receiver-columns,3);display:flex;flex-wrap:wrap;justify-content:center;gap:var(--gap);margin:0}#receivers>.col{flex:0 0 calc((100% - (var(--cols) - 1)*var(--gap))/var(--cols));width:auto;max-width:calc((100% - (var(--cols) - 1)*var(--gap))/var(--cols));padding:0;margin:0;min-width:0}
+    .receiver-card{overflow:hidden;height:100%;background:#151819;border:1px solid var(--line);border-radius:12px;box-shadow:0 3px 12px #0002}
+    .card-heading{padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:72px;border-bottom:1px solid var(--line);border-top-width:2px!important;background:#1d2022}
+    .tuner-identity{display:flex;align-items:center;gap:12px;min-width:0}.tuner-number{display:grid;place-items:center;width:34px;height:34px;flex-shrink:0;border:1px solid var(--channel);border-radius:9px;background:transparent;color:var(--channel);font:500 19px Consolas,monospace}
+    .heading-name{min-width:0;display:flex;flex-direction:column;gap:3px}.heading-name strong{font-size:16px;font-weight:600;letter-spacing:.01em}.heading-name strong,.provider{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.provider{font-size:12px;color:var(--muted)}
+    .header-controls{display:flex;align-items:center;gap:8px;flex-shrink:0}.badge-state{font-size:10px;letter-spacing:.035em;font-weight:600;padding:4px 6px;border-radius:4px;max-width:85px;white-space:normal;background:#343839;color:#c0c6c3}.badge-state.locked{background:#243d32;color:#a5d7b8}
+    .video-frame{position:relative;aspect-ratio:16/9;background:#000}.video-frame video{display:block;width:100%;height:100%;object-fit:contain}.video-frame.can-expand{cursor:zoom-in}.video-message{position:absolute;inset:0;display:grid;place-items:center;color:#b5bbb6;text-align:center;padding:24px;font-size:14px;pointer-events:none}.video-message:empty{display:none}
+    .card-details{padding:12px 16px 15px}.stat{min-width:0;text-align:center}.stat label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.stat strong{display:block;font:500 16px Consolas,monospace;margin-top:5px;color:var(--ink)}
+    .frequency-eye{display:grid;grid-template-columns:minmax(0,1fr) 140px;align-items:center;gap:8px;min-height:96px;border-bottom:1px solid var(--line);padding:4px 0 12px;text-align:left}.frequency-eye>div{min-width:0}.freq-shown{font:500 25px Consolas,monospace;letter-spacing:-.04em;margin-top:5px;white-space:nowrap}.carrier-shown{font:11px Consolas,monospace;line-height:1.5;margin-top:4px;min-height:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#9da69f}
+    .stats-row{display:grid;grid-template-columns:1fr 1fr 1.8fr;gap:0;margin-top:14px}.stats-row .stat{padding:0 10px;border-right:1px solid var(--line)}.stats-row .stat:first-child{padding-left:0}.stats-row .stat:last-child{border-right:0;padding-right:0}.mode{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mode-stat strong{font-size:14px;line-height:19px}
+    .card-heading{padding:10px 16px;min-height:64px}.header-controls{gap:10px}.header-eye{display:flex;align-items:center;padding-left:10px;border-left:1px solid var(--line)}.header-eye>div{min-height:0!important;gap:7px!important}.header-eye canvas{width:46px!important;height:46px!important}.header-eye span{flex:0 0 auto!important;width:auto!important;font-size:11px!important;line-height:15px!important;color:var(--muted)!important}
+    .card-details{padding:14px 16px 16px}.stats-row{grid-template-columns:1.5fr .8fr 1fr 1.5fr;margin-top:0;align-items:start}.stats-row .stat{text-align:left;padding:0 14px}.stats-row .freq-stat{padding-left:0}.stats-row .freq-shown{margin-top:3px}.stats-row .carrier-shown{margin-top:3px}.stats-row .stat:not(.freq-stat) strong{margin-top:8px}
+    .info-btn{display:inline-grid;place-items:center;vertical-align:-2px;margin-left:6px;padding:0;width:16px;height:16px;border:0;border-radius:50%;background:transparent;color:var(--muted);cursor:pointer}.info-btn:hover{color:var(--amber)}
+    .info-dialog{position:fixed;inset:0;margin:auto;width:min(520px,calc(100% - 32px));padding:0;border:1px solid var(--line);border-radius:12px;background:#151819;color:var(--ink);box-shadow:0 24px 90px #000a;overflow:hidden}.info-dialog::backdrop{background:#080b0de0;backdrop-filter:blur(4px)}
+    .info-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;min-height:72px;background:#1d2022;border-top:3px solid var(--channel);border-bottom:1px solid var(--line)}.info-header .heading-name strong{font-size:19px}.info-header .tuner-number{width:38px;height:38px;font-size:21px}
+    .info-close{display:grid;place-items:center;width:36px;height:36px;padding:0;border:0;border-radius:6px;background:transparent;color:var(--muted);cursor:pointer}.info-close:hover{background:#ffffff0b;color:var(--ink)}.info-close:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+    .info-list{margin:0;padding:6px 20px 10px}.info-list>div{display:flex;justify-content:space-between;align-items:baseline;gap:20px;padding:11px 0;border-bottom:1px solid var(--line)}.info-list>div:last-child{border-bottom:0}.info-list dt{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:400;white-space:nowrap}.info-list dd{margin:0;font:500 18px Consolas,monospace;text-align:right;overflow-wrap:anywhere;color:var(--ink)}
+    .chat-btn{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;font-size:13px;color:var(--ink);background:transparent;border:1px solid #4a504e;border-radius:7px;cursor:pointer}.chat-btn:hover{border-color:var(--amber);color:var(--amber)}.chat-badge{background:#c4584d;color:#fff;border-radius:9px;font-size:11px;font-weight:600;padding:0 6px;line-height:17px}
+    #chat-panel{display:none;position:fixed;top:64px;right:28px;width:min(440px,calc(100vw - 32px));height:min(70vh,640px);min-width:300px;min-height:280px;z-index:1030;flex-direction:column;background:#151819;border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 50px #000c;resize:both;overflow:hidden}#chat-panel.open{display:flex}
+    #chat-head{display:flex;align-items:center;gap:10px;padding:11px 14px;background:#1d2022;border-top:3px solid var(--amber);border-bottom:1px solid var(--line);cursor:move;user-select:none;touch-action:none}#chat-head strong{font-size:14px;font-weight:600;white-space:nowrap}
+    #chat-status{flex:1;min-width:0;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    #chat-who{background:none;border:0;padding:0;color:var(--amber);font-size:12px;cursor:pointer}#chat-close{display:grid;place-items:center;width:28px;height:28px;padding:0;border:0;border-radius:6px;background:transparent;color:var(--muted);cursor:pointer}#chat-close:hover{background:#ffffff0b;color:var(--ink)}
+    #chat-who-list{display:none;flex-wrap:wrap;gap:2px 14px;max-height:110px;overflow-y:auto;padding:7px 14px;border-bottom:1px solid var(--line);font-size:12px;color:#c9d0cc}#chat-who-list.open{display:flex}
+    #chat-id{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--line)}#chat-as{flex:1 0 100%;font-size:12px;color:var(--muted)}
+    #chat-panel input{flex:1 1 110px;min-width:0;padding:6px 10px;font-size:13px;color:var(--ink);background:#101213;border:1px solid var(--line);border-radius:7px}#chat-panel input:focus{outline:1px solid var(--amber);border-color:var(--amber)}#chat-panel input:disabled{opacity:.55}
+    #chat-messages{flex:1;overflow-y:auto;padding:10px 14px;font-size:14px;line-height:1.4}.cmsg{margin-bottom:6px;overflow-wrap:anywhere}.cmsg-time{color:#7c8584;font-size:12px;margin-right:6px}.cmsg-name{color:var(--amber);font-weight:500;margin-right:6px}.cmsg.mine .cmsg-name{color:var(--mint)}
+    #chat-form{display:flex;gap:6px;padding:9px;border-top:1px solid var(--line)}#chat-send{padding:6px 14px;font-size:13px;color:#171914;background:#dfb35b;border:0;border-radius:7px;font-weight:600;cursor:pointer}#chat-send:disabled{opacity:.45;cursor:default}
+    #chat-note{padding:0 14px 6px;font-size:12px;color:#e08a7f}#chat-note:empty{display:none}
+    .quit-btn{display:inline-flex;align-items:center;gap:7px;margin-left:6px;padding:7px 14px;font-size:13px;font-weight:500;color:#e8aca2;background:#c4584d14;border:1px solid #6e3b36;border-radius:7px;cursor:pointer}.quit-btn:hover{color:#fff;background:#c4584d3a;border-color:#c4584d}.quit-btn:disabled{opacity:.5;cursor:default}.quit-btn.solid{color:#fff;background:#b4483d;border-color:#b4483d}.quit-btn.solid:hover{background:#c4584d}
+    #quit-dialog{width:min(420px,calc(100% - 32px))}.quit-text{margin:0;padding:18px 20px 6px;font-size:14px;line-height:1.5;color:#c9d0cc}.quit-actions{display:flex;justify-content:flex-end;gap:10px;padding:14px 20px 18px}
+    #startup-toast{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1060;width:min(400px,calc(100% - 32px));background:#151819;border:1px solid var(--line);border-radius:12px;box-shadow:0 24px 90px #000c;overflow:hidden;opacity:1;transition:opacity .35s;cursor:pointer}#startup-toast.show{display:block}#startup-toast.fade{opacity:0}
+    .st-head{display:flex;align-items:center;gap:12px;padding:14px 18px;background:#1d2022;border-top:3px solid var(--amber);border-bottom:1px solid var(--line);font-size:15px}.st-head strong{font-weight:600}.st-head .info-close{margin-left:auto;margin-right:-6px}
+    .st-spin{width:16px;height:16px;border:2px solid #4a504e;border-top-color:var(--amber);border-radius:50%;animation:st-turn .9s linear infinite}.st-done .st-spin{animation:none;border-color:var(--mint)}@keyframes st-turn{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.st-spin{animation:none}}
+    #st-rows{padding:6px 18px 10px}.st-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}.st-row:last-child{border-bottom:0}.st-row .tuner-number{width:28px;height:28px;font-size:15px;border-radius:7px}.st-freq{font:14px Consolas,monospace;color:var(--ink);white-space:nowrap}.st-state{margin-left:auto;text-align:right;color:var(--muted);font-size:13px}.st-state.ok{color:var(--mint)}.st-state.bad{color:#e08a7f}.st-state.wait{color:var(--amber)}
+    #out-dialog{width:min(660px,calc(100% - 32px));max-height:calc(100dvh - 40px);overflow-y:auto}.out-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;border-bottom:1px solid var(--line)}#out-status{font-size:12px;color:var(--muted)}#out-status.on{color:var(--mint)}
+    #out-rows{padding:4px 20px 6px}.out-row{display:grid;grid-template-columns:34px 1fr;gap:4px 14px;padding:13px 0;border-bottom:1px solid var(--line)}.out-row:last-child{border-bottom:0}.out-row .tuner-number{grid-row:span 3;align-self:start}.out-name{font-size:14px;font-weight:600;align-self:center}.out-name small{font-weight:400;color:var(--muted);margin-left:8px}
+    .out-addr{display:flex;align-items:center;gap:10px;min-width:0}.out-tag{flex:0 0 38px;font-size:11px;letter-spacing:.06em;color:var(--muted)}.out-addr code{flex:1;min-width:0;text-align:center;font:500 15px Consolas,monospace;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;user-select:all}
+    .out-copy{flex:0 0 auto;min-width:64px;padding:4px 10px;font-size:12px;color:var(--ink);background:transparent;border:1px solid #4a504e;border-radius:6px;cursor:pointer}.out-copy:hover{border-color:var(--amber);color:var(--amber)}
+    #out-more{margin:0;padding:10px 20px;border-top:1px solid var(--line)}#out-more summary{font-size:14px;color:var(--amber)}.out-form{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;align-items:center;margin-top:12px;font-size:13px}.out-form label{color:var(--muted)}.out-form input,.out-form select{min-width:0;padding:6px 10px;font-size:13px;color:var(--ink);background:#101213;border:1px solid var(--line);border-radius:7px}.out-form input:focus,.out-form select:focus{outline:1px solid var(--amber);border-color:var(--amber)}.out-form .quit-btn.solid{grid-column:2;justify-self:start;margin:0;background:#dfb35b;border-color:#dfb35b;color:#171914}
+    .out-viewer{display:flex;align-items:center;gap:12px;padding:10px 20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}.out-viewer label{flex:1 1 auto}.out-viewer input{flex:0 0 170px;min-width:0;padding:5px 10px;font-size:13px;color:var(--ink);background:#101213;border:1px solid var(--line);border-radius:7px}.out-viewer input:focus{outline:1px solid var(--amber);border-color:var(--amber)}.out-viewer input.bad{border-color:#c4584d}
+    #out-note{padding:0 20px;font-size:12px;color:#e08a7f}#out-note:empty{display:none}.out-help{padding:12px 20px 18px;font-size:14px;line-height:1.6;color:var(--muted)}.out-help p{margin:0 0 9px}.out-help p:last-child{margin-bottom:0}.out-help b{color:#c9d0cc;font-weight:500}
+    .stats-row{grid-template-columns:1.3fr .8fr 1fr 1.6fr;align-items:start}.stats-row .stat,.stats-row .freq-stat{text-align:center;padding:0 12px}.stats-row label{font-size:12px;letter-spacing:.05em}
+    .stats-row .freq-shown{font-size:31px;line-height:38px;margin-top:5px;letter-spacing:-.03em}.stats-row .stat:not(.freq-stat) strong{font-size:22px;line-height:38px;margin-top:5px}.stats-row .mode-stat strong{font-size:18px}
+    #stopped-screen{position:fixed;inset:0;z-index:3000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#000;color:var(--ink);text-align:center}#stopped-screen[hidden]{display:none}#stopped-screen .brand-mark{width:64px;height:64px;opacity:.85}#stopped-screen strong{font-size:22px;font-weight:600;letter-spacing:-.01em}#stopped-screen span{font-size:15px;color:var(--muted)}
+    .spectrum-heading,.receiver-section-heading{gap:14px;align-items:baseline}.section-kicker{font-size:16px;font-weight:600;letter-spacing:.13em}#spectrum-panel h2,.receiver-section-heading h2{font-size:15px;font-weight:500;letter-spacing:0;color:#c3c9c6}.spectrum-source{font-size:12px;padding-left:14px}
+    .navbar{margin-bottom:8px!important}#spectrum-panel{margin-bottom:10px!important}#receiver-panel{margin-bottom:10px}main.container-fluid{padding-top:10px!important}.page-signature{padding-top:12px}
+    .ctl-stack{display:flex;flex-direction:column;align-items:flex-end;gap:7px}.ctl-row{display:flex;align-items:center;gap:8px}
+    .vu{display:flex;gap:2px;--on:#4fcf7e}.vu i{width:8px;height:8px;border-radius:1.5px;background:#2a2f31}.vu i:nth-child(n+12){--seg:#e4b85b}.vu i:nth-child(n+15){--seg:#d9534f}.vu i.on{background:var(--seg,var(--on))}.vu i.pk{background:var(--seg,var(--on));opacity:.65}.vu.wait{opacity:.5}
+    .ts-btn{display:inline-grid;place-items:center;flex:0 0 auto;width:30px;height:30px;padding:0;margin-left:2px;color:var(--muted);background:transparent;border:1px solid #3d4345;border-radius:7px;cursor:pointer}.ts-btn:hover{color:var(--amber);border-color:var(--amber)}
+    #ts-dialog{width:min(780px,calc(100% - 32px));max-height:calc(100dvh - 40px);overflow-y:auto}.ts-state{margin-left:auto;margin-right:8px;font-size:12px;color:var(--muted)}.ts-state.live{color:var(--mint)}
+    .ts-chips{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}.ts-chip{padding:14px 18px;border-right:1px solid var(--line);min-width:0}.ts-chip:last-child{border-right:0}.ts-chip label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.ts-chip strong{display:block;margin-top:6px;font:500 22px Consolas,monospace;color:var(--ink)}.ts-chip strong.bad{color:#e08a7f}.ts-chip small{font-size:12px;color:var(--muted);font-weight:400}
+    .ts-service{padding:12px 20px;border-bottom:1px solid var(--line);font-size:14px;line-height:1.7}.ts-service b{color:var(--amber);font-weight:500}.ts-service span{color:var(--muted)}
+    .ts-table{width:calc(100% - 40px);margin:6px 20px 4px;border-collapse:collapse;font-size:14px}.ts-table th{padding:9px 8px;font-size:11px;font-weight:400;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:var(--muted);border-bottom:1px solid var(--line)}.ts-table td{padding:9px 8px;border-bottom:1px solid #23282a;vertical-align:middle}.ts-table tr:last-child td{border-bottom:0}.ts-table .num{text-align:right;font-family:Consolas,monospace}.ts-table .pid{font-family:Consolas,monospace;color:var(--amber)}.ts-table .pid small{color:var(--muted);margin-left:6px}.ts-table td.bad{color:#e08a7f}.ts-table .dim{color:var(--muted)}
+    .ts-info{margin-top:3px;font:12px Consolas,monospace;color:var(--muted)}.ts-bar{display:inline-block;vertical-align:middle;width:90px;height:6px;margin-right:8px;background:#2a2f31;border-radius:3px;overflow:hidden}.ts-bar i{display:block;height:100%;background:var(--amber)}.ts-bar.pad i{background:#59615f}
+    .ts-note{margin:0;padding:10px 20px 16px;font-size:13px;line-height:1.55;color:var(--muted)}
+    @media(max-width:620px){.ts-chips{grid-template-columns:1fr 1fr}.ts-chip:nth-child(2){border-right:0}.ts-chip:nth-child(-n+2){border-bottom:1px solid var(--line)}.ts-bar{display:none}}
+    .receiver-card{container-type:inline-size}
+    @container (max-width:560px){.stats-row{grid-template-columns:1.4fr .6fr .9fr 1.8fr}.stats-row .freq-shown{font-size:22px;line-height:32px}.stats-row .stat:not(.freq-stat) strong{font-size:17px;line-height:32px}.stats-row .mode-stat strong{font-size:13px}.stats-row label{font-size:10px;letter-spacing:.03em}.stats-row .stat,.stats-row .freq-stat{padding:0 7px}.vu i{width:6px}}
+    @container (max-width:430px){.stats-row .freq-shown{font-size:20px}.stats-row .stat:not(.freq-stat) strong{font-size:15px}.stats-row .mode-stat strong{font-size:12px}}
+    .rec-control input:checked{border-color:#c4584d;background:#4a2523}.rec-control input:checked:before{background:#ef6a62}.rec-count{color:#ef6a62;font:600 12px Consolas,monospace}.rec-note{font-size:12px;color:#e08a7f}
+    .rec-badge{display:inline-flex;align-items:center;gap:6px;padding:3px 7px;font-size:10px;font-weight:700;letter-spacing:.07em;color:#ef6a62;background:#4a252326;border:1px solid #6e3b36;border-radius:4px}.rec-badge[hidden]{display:none}.rec-badge:before{content:'';width:7px;height:7px;border-radius:50%;background:#ef6a62;animation:rec-blink 1.2s ease-in-out infinite}@keyframes rec-blink{50%{opacity:.2}}@media(prefers-reduced-motion:reduce){.rec-badge:before{animation:none}}
+    #about-dialog{width:min(800px,calc(100% - 32px));max-height:calc(100dvh - 40px);overflow-y:auto}.about-top{display:flex;align-items:center;gap:18px;padding:22px 26px;border-bottom:1px solid var(--line)}.about-top .brand-mark{width:60px;height:60px;flex:0 0 auto}.about-top strong{display:block;font-size:26px;font-weight:600}.about-top div>span{display:block;margin-top:5px;font-size:15px;color:var(--muted)}.about-top strong .brand-prefix{display:inline;margin:0 6px 0 0;font-size:inherit;color:var(--amber)}
+    .about-section{padding:16px 26px;border-bottom:1px solid var(--line)}.about-section:last-child{border-bottom:0}.about-section h3{margin:0 0 10px;font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}.about-section ul{margin:0;padding:0;list-style:none}.about-section li{padding:5px 0;font-size:16px;line-height:1.55;color:#c9d0cc}.about-section li b{color:var(--ink);font-weight:500}.about-section p{margin:0;font-size:15px;line-height:1.6;color:#c9d0cc}
+    #settings-dialog{width:min(800px,calc(100% - 32px));max-height:calc(100dvh - 40px);overflow-y:auto}.set-body{padding:24px 30px 10px}.set-label{display:block;font-size:16px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+    .set-row{display:flex;align-items:center;gap:12px;margin-top:10px}.set-row input{width:200px;padding:11px 14px;text-align:center;font:500 26px Consolas,monospace;color:var(--ink);background:#101213;border:1px solid var(--line);border-radius:8px}.set-row input:focus{outline:1px solid var(--amber);border-color:var(--amber)}.set-row input.bad{border-color:#c4584d}.set-unit{font-size:20px;color:var(--muted)}
+    .amber-btn{margin-left:auto;padding:12px 26px;font-size:18px;font-weight:600;color:#171914;background:#dfb35b;border:0;border-radius:8px;cursor:pointer}.amber-btn:hover{background:#edc777}.amber-btn:disabled{opacity:.5;cursor:default}
+    .set-preview{margin:16px 0 0;font-size:19px;line-height:1.5;color:#c9d0cc}.set-preview b{color:var(--ink);font-weight:500}.set-preview.bad{color:#e08a7f}.set-note{min-height:26px;margin-top:8px;font-size:17px;color:var(--mint)}.set-note.bad{color:#e08a7f}.set-help{margin:0;padding:6px 30px 22px;font-size:17px;line-height:1.55;color:var(--muted)}
+    .set-cal{border-top:1px solid var(--line);margin-top:4px;padding-bottom:20px}.set-text{margin:12px 0 0;font-size:17px;line-height:1.55;color:var(--muted)}
+    .ghost-btn{padding:12px 20px;font-size:17px;color:var(--ink);background:transparent;border:1px solid #4a504e;border-radius:8px;cursor:pointer}.ghost-btn:hover{border-color:var(--amber);color:var(--amber)}.ghost-btn:disabled{opacity:.45;cursor:default}.ghost-btn[hidden]{display:none}
+    .cal-rows{margin-top:16px}.cal-row{display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:6px 16px;padding:13px 0;border-top:1px solid var(--line);font-size:17px}.cal-row .tuner-number{width:36px;height:36px;font-size:19px;border-radius:8px}.cal-state{color:var(--muted);min-width:0}.cal-state.ok{color:var(--mint)}.cal-state.bad{color:#e08a7f}.cal-state.busy{color:var(--amber)}.cal-value{font:500 21px Consolas,monospace;color:var(--ink);text-align:right;white-space:nowrap}.cal-value small{display:block;font:14px Segoe UI,sans-serif;color:var(--muted)}
+    .update-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;margin:0 0 12px;padding:12px 20px;font-size:17px;color:var(--ink);background:#e4b85b1a;border:1px solid #6e5a35;border-radius:10px}.update-bar[hidden]{display:none}.update-bar #update-text{flex:1 1 auto}.update-bar a{color:var(--amber);font-weight:600;text-decoration:none;white-space:nowrap}.update-bar a:hover{text-decoration:underline}.update-bar .ghost-btn{padding:6px 16px;font-size:15px}
+    .set-upd{border-top:1px solid var(--line);padding-bottom:22px}.set-upd .autotune-control{font-size:17px}.about-update{display:block;margin-top:8px;color:var(--amber);font-size:15px}.about-update a{color:var(--amber);font-weight:600}
+    .vol{display:flex;align-items:center;gap:5px}.audio-toggle{width:28px;height:28px;display:grid;place-items:center;padding:0;border:0;border-radius:5px;background:transparent;color:#aab3ad}.audio-toggle:hover{background:#ffffff0b;color:#e3e9e3}.audio-toggle[aria-pressed="true"]{color:var(--mint)}
+    .vol .volume{appearance:none;-webkit-appearance:none;--v:80%;width:0;height:24px;opacity:0;margin:0;padding:0;background:transparent;box-shadow:none;transition:width .18s,opacity .18s}.vol:hover .volume,.vol:focus-within .volume{width:60px;opacity:1}.vol .volume::-webkit-slider-runnable-track{height:3px;border-radius:4px;background:#47524b}.vol .volume::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:10px;height:10px;margin-top:-3.5px;border:0;border-radius:50%;background:var(--mint);box-shadow:none}.vol .volume::-moz-range-track{height:3px;border-radius:4px;background:#47524b}.vol .volume::-moz-range-thumb{width:10px;height:10px;border:0;border-radius:50%;background:var(--mint);box-shadow:none}.vol .volume:focus-visible{outline:1px solid var(--mint);outline-offset:3px;border-radius:4px}
+    summary{cursor:pointer}.discovery-dialog{position:fixed;inset:0;margin:auto;width:min(540px,calc(100% - 32px));max-height:calc(100dvh - 48px);padding:0;border:1px solid #444a45;border-radius:14px;background:var(--panel);color:var(--ink);box-shadow:0 24px 90px #0008}.discovery-dialog::backdrop,.picture-dialog::backdrop{background:#080b0de0;backdrop-filter:blur(4px)}
+    .discovery-dialog .modal-header{align-items:flex-start;padding:24px 24px 18px;border-color:var(--line);gap:16px}.discovery-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:12px;background:#e4b85b12;color:var(--amber);flex-shrink:0}.discovery-dialog .modal-body{padding:20px 24px}.discovery-dialog .modal-footer{padding:16px 24px;border-color:var(--line)}
+    .discovery-device{display:flex;gap:12px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:8px;background:#151819}.discovery-device>div{min-width:0;flex:1}.discovery-number{margin-top:2px;display:grid;place-items:center;width:30px;height:30px;border:1px solid #655638;border-radius:7px;background:transparent;color:var(--amber);font-weight:500;flex-shrink:0}.discovery-device small{display:block;color:var(--muted);overflow-wrap:anywhere}.discovery-device strong{overflow-wrap:anywhere}.device-info{display:grid;grid-template-columns:100px minmax(0,1fr);gap:7px 12px;line-height:1.5}.device-info dt{font-weight:400;color:var(--muted)}.device-info dd{margin:0;overflow-wrap:anywhere}
+    .picture-dialog{position:fixed;inset:0;margin:auto;padding:0;border:1px solid #444a45;border-radius:12px;background:var(--panel);color:var(--ink);max-width:96vw;max-height:96dvh;box-shadow:0 24px 90px #000a;overflow:hidden}.picture-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 22px;min-height:74px;background:#1d2022}.picture-heading{display:flex;align-items:center;flex-wrap:wrap;gap:8px 30px;min-width:0;flex:1}.picture-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:22px;font-weight:600}.picture-controls{display:flex;align-items:center;gap:12px;flex-shrink:0}.picture-rx{display:flex;flex-wrap:wrap;gap:4px 28px;color:var(--muted);font:17px Consolas,monospace;line-height:1.5}.picture-rx>span{white-space:nowrap}.picture-rx strong{color:var(--ink);font-weight:500}.picture-rx .rx-lock{color:var(--mint)}.picture-stage{position:relative;background:#000;cursor:zoom-out}.picture-stage video{display:block;width:100%;height:100%;object-fit:contain}
+    #picture-eye{flex-shrink:0}#picture-eye>div{min-height:40px!important;gap:0!important}#picture-eye canvas{width:40px!important;height:40px!important}#picture-eye span{display:none!important}
+    .page-signature{display:grid;grid-template-columns:1fr auto 1fr;align-items:baseline;padding:20px 1px 0;color:#89928d;font-size:11px;letter-spacing:.03em}.page-signature span:first-child{color:#b1b7b0}.page-signature span:last-child{text-align:right}.page-signature .signature-middle{text-align:center;color:#a3aca7;font-size:12px;letter-spacing:.04em}@media(max-width:700px){.page-signature{grid-template-columns:1fr;gap:4px;text-align:center}.page-signature span:last-child{text-align:center}}
+    @media(max-width:1199px){#receivers{--receiver-columns:2!important}}
+    @media(max-width:700px){main.container-fluid{padding:12px 16px 16px!important}.navbar{gap:15px;align-items:flex-start;flex-wrap:wrap;padding-bottom:16px!important;margin-bottom:18px!important}.brand-name{font-size:21px}.brand-mark{width:42px;height:42px}.navbar-status{width:100%;justify-content:space-between}.panel{padding:14px}#spectrum-panel{margin-bottom:20px!important}.spectrum-heading{gap:8px;flex-wrap:wrap}#spectrum{height:180px}.spectrum-centre{display:none}.spectrum-scale{font-size:10px}.spectrum-source{font-size:10px}#receivers{--receiver-columns:1!important;--gap:16px}.picture-heading{gap:4px 12px}.picture-title{flex-basis:100%}.picture-rx{font-size:11px;gap:3px 10px}.picture-header{gap:10px;padding:10px 12px}.page-signature{font-size:10px}}
+    @media(max-width:560px){.stats-row{grid-template-columns:1fr 1fr;row-gap:12px}.stats-row .stat{padding:0 10px}.stats-row .stat:nth-child(odd){padding-left:0}.stats-row .stat:nth-child(2){border-right:0}}
+    @media(max-width:420px){.device-info{grid-template-columns:1fr;gap:2px}.device-info dd{margin-bottom:6px}.frequency-eye{grid-template-columns:minmax(0,1fr) 122px;gap:4px}.freq-shown{font-size:22px}.frequency-eye .eye>div{gap:3px!important}.card-heading{padding:12px}.card-details{padding:10px 12px 14px}.tuner-identity{gap:9px}.stats-row .stat{padding:0 6px}.stats-row label{font-size:10px}.mode-stat strong{font-size:12px}.brand-subtitle{font-size:10px}}
+    .spectrum-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.autotune-control{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;white-space:nowrap}.autotune-control input{appearance:none;width:32px;height:18px;border:1px solid #57605a;border-radius:20px;background:#252b27;position:relative;cursor:pointer}.autotune-control input:before{content:'';position:absolute;width:12px;height:12px;top:2px;left:3px;border-radius:50%;background:#a6adaf;transition:transform .15s}.autotune-control input:checked{border-color:var(--amber);background:#544322}.autotune-control input:checked:before{transform:translateX(12px);background:var(--amber)}.autotune-control input:focus-visible{outline:2px solid var(--amber);outline-offset:3px}#scan-status{font-size:11px}
+  </style>
+</head>
+<body>
+  <main class="container-fluid px-3 px-lg-4 py-3">
+    <nav class="navbar px-3 py-2 mb-3">
+      <div class="navbar-brand"><svg class="brand-mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="1" y="1" width="46" height="46" rx="11" fill="#e4b85b0c" stroke="#6e5a35"/><path d="M8 32h5l5-16 6 20 6-20 5 16h5" stroke="#e4b85b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 39h32" stroke="#6e5a35"/><circle cx="18" cy="10" r="1.5" fill="#e4b85b"/><circle cx="30" cy="10" r="1.5" fill="#e4b85b"/></svg><div class="brand-wordmark"><div class="brand-name"><span class="brand-prefix">HB9</span>MultiTiouner<button type="button" id="header-version" class="brand-version" hidden aria-haspopup="dialog">About</button></div><div class="brand-subtitle">QO-100 · DATV receiver</div></div></div>
+      <div class="navbar-status">
+        <span id="summary" class="muted small">Connecting to local receiver…</span>
+        <button id="settings-open" class="chat-btn" type="button" aria-haspopup="dialog" title="Settings"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h8M18 6h2M4 12h2M12 12h8M4 18h10M20 18h0"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg><span>Settings</span></button>
+        <button id="about-open" class="chat-btn" type="button" aria-haspopup="dialog" title="Help and about"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.2-2.5 3.9"/><path d="M12 17.2v.01"/></svg><span>Help</span></button>
+        <button id="out-open" class="chat-btn" type="button" aria-haspopup="dialog" title="Send the tuner video to VLC, OBS or other PCs"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.9 19.1a10 10 0 0 1 0-14.2"/><path d="M8.5 15.5a5 5 0 0 1 0-7"/><circle cx="12" cy="12" r="1.2"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19.1 4.9a10 10 0 0 1 0 14.2"/></svg><span>Stream out</span></button>
+        <button id="chat-open" class="chat-btn" type="button" aria-expanded="false" aria-controls="chat-panel" title="BATC wideband chat"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Chat</span><span id="chat-badge" class="chat-badge" hidden></span></button>
+        <button id="quit" class="quit-btn" type="button" title="Stop all receivers and quit"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v9"/><path d="M6.4 6.6a8 8 0 1 0 11.2 0"/></svg><span id="quit-label">Quit</span></button>
+      </div>
+    </nav>
+    <div id="update-bar" class="update-bar" hidden role="status"><span id="update-text"></span><a id="update-link" href="#" target="_blank" rel="noopener noreferrer">See what is new and download</a><button id="update-later" type="button" class="ghost-btn">Later</button></div>
+
+    <section id="spectrum-panel" class="panel mb-3">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+        <div>
+          <div class="spectrum-heading"><span class="section-kicker">Spectrum</span><h2>QO-100 Wideband</h2><span class="spectrum-source">BATC · 10 GHz</span></div>
+        </div>
+        <div class="spectrum-actions"><span id="scan-status" class="muted small"></span><label class="autotune-control"><input id="autotune" type="checkbox" role="switch"><span>AutoTune</span></label><span id="rec-note" class="rec-note" hidden></span><label class="autotune-control rec-control" title="Record every transmission (the beacon excepted) into the Recordings folder, one folder per callsign"><input id="record" type="checkbox" role="switch"><span>Record</span><span id="rec-count" class="rec-count" hidden></span></label><button id="start" class="btn btn-success" type="button">Start receiving</button></div>
+      </div>
+      <canvas id="spectrum" aria-label="BATC QO-100 spectrum"></canvas>
+      <div id="spectrumStatus" class="muted small mt-2" aria-live="polite"></div>
+      <div class="spectrum-scale"><span>10490.500 MHz</span><span class="spectrum-centre">CENTER <strong>10495.000 MHz</strong></span><span>SPAN <strong>9.000 MHz</strong> · 10499.500 MHz</span></div>
+    </section>
+
+    <section id="receiver-panel" class="panel">
+    <div class="receiver-section-heading"><span class="section-kicker">Receiver bank</span><h2>MiniTiouner Receivers</h2></div>
+    <section id="receivers" class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3" aria-live="polite"></section>
+    </section>
+    <footer class="page-signature"><span>HB9 MultiTiouner <span id="app-version"></span></span><span class="signature-middle">by HB9IIU · Free software · GPL-3.0</span><span>Satellite television · QO-100</span></footer>
+  </main>
+
+  <dialog id="picture" class="picture-dialog" aria-labelledby="picture-title">
+    <div class="picture-header"><div class="picture-heading"><div id="picture-title" class="picture-title"></div><div id="picture-rx" class="picture-rx"></div><div id="picture-eye" aria-label="Signal quality"></div></div><div class="picture-controls"><span id="picture-volume"></span><button id="picture-close" type="button" class="btn-close" aria-label="Close enlarged video" autofocus></button></div></div>
+    <div id="picture-stage" class="picture-stage"></div>
+  </dialog>
+  <aside id="chat-panel" aria-label="BATC wideband chat"><div id="chat-head"><strong>BATC wideband chat</strong><span id="chat-status">connecting…</span><button type="button" id="chat-who" hidden title="Who is in the chat">0 in chat ▾</button><button type="button" id="chat-close" aria-label="Close the chat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div id="chat-who-list"></div><div id="chat-id"><input id="chat-call" maxlength="20" placeholder="Your callsign" aria-label="Your callsign" autocomplete="off" spellcheck="false"><input id="chat-name" maxlength="30" placeholder="Your first name" aria-label="Your first name" autocomplete="off"><span id="chat-as"></span></div><div id="chat-messages" aria-live="polite"></div><div id="chat-note"></div><form id="chat-form"><input id="chat-input" maxlength="500" autocomplete="off" aria-label="Message"><button type="submit" id="chat-send">Send</button></form></aside>
+  <div id="stopped-screen" hidden><strong>HB9 MultiTiouner has stopped</strong><span>All receivers are released. You can close this tab.</span></div>
+  <dialog id="quit-dialog" class="info-dialog" aria-labelledby="quit-title" style="--channel:#c4584d"><div class="info-header"><div class="heading-name"><strong id="quit-title">Quit HB9 MultiTiouner?</strong><span class="section-kicker">Stops everything</span></div></div><p class="quit-text">This stops all receivers and the video. You can close this browser tab afterwards.</p><div class="quit-actions"><button id="quit-cancel" type="button" class="chat-btn" autofocus>Cancel</button><button id="quit-ok" type="button" class="quit-btn solid" style="margin:0">Quit</button></div></dialog>
+  <div id="startup-toast" role="status" aria-live="polite" title="Click to dismiss"><div class="st-head"><span class="st-spin"></span><strong id="st-title">Starting receivers…</strong><button id="st-close" type="button" class="info-close" aria-label="Close" title="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div id="st-rows"></div></div>
+  <dialog id="out-dialog" class="info-dialog" aria-labelledby="out-title"><div class="info-header"><div class="heading-name"><strong id="out-title">Stream out</strong><span class="section-kicker">Multicast UDP · home network</span></div><button id="out-close" type="button" class="info-close" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="out-top"><label class="autotune-control"><input id="out-enabled" type="checkbox" role="switch"><span>Send the tuner video to the network</span></label><span id="out-status">Off</span></div>
+    <div id="out-rows"></div><div class="out-viewer"><label for="out-viewer">OBS on another computer? Its address (optional)</label><input id="out-viewer" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="e.g. 192.168.0.152"></div><div id="out-note"></div>
+    <details id="out-more"><summary>Advanced</summary><div class="out-form"><label for="out-group">Multicast address</label><input id="out-group" autocomplete="off" spellcheck="false"><label for="out-port">First port</label><input id="out-port" type="number" min="1024" max="65000"><label for="out-card">Network card</label><select id="out-card"></select><button id="out-apply" type="button" class="quit-btn solid">Apply</button></div></details>
+    <div class="out-help"><p><b>VLC:</b> Media &gt; Open Network Stream, paste the VLC address.</p><p><b>OBS:</b> add a Media Source, untick "Local File", paste the OBS address. If OBS runs on another computer (a Mac, for example) and stays black, enter the address of that computer above, then copy again.</p><p>The two addresses differ only by the "@", which VLC needs. Each tuner keeps its own address, whatever station it is tuned to. If nothing arrives, allow the app through the Windows firewall (private network).</p></div></dialog>
+  <dialog id="ts-dialog" class="info-dialog" aria-labelledby="ts-title"><div class="info-header"><div class="tuner-identity"><span id="ts-num" class="tuner-number"></span><div class="heading-name"><strong id="ts-title"></strong><span class="section-kicker">Transport stream</span></div></div><span id="ts-state" class="ts-state"></span><button id="ts-close" type="button" class="info-close" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="ts-chips"><div class="ts-chip"><label>Stream rate</label><strong id="ts-rate">–</strong></div><div class="ts-chip"><label>Padding</label><strong id="ts-null">–</strong></div><div class="ts-chip"><label>Continuity errors</label><strong id="ts-cc">–</strong></div><div class="ts-chip"><label>Packets</label><strong id="ts-packets">–</strong></div></div>
+    <div id="ts-service" class="ts-service" hidden></div>
+    <table class="ts-table"><thead><tr><th>PID</th><th>Content</th><th class="num">kbit/s</th><th>Share</th><th class="num">Errors</th></tr></thead><tbody id="ts-rows"></tbody></table>
+    <p class="ts-note">Live view of the received MPEG transport stream, updated every second. Continuity errors mean lost or damaged packets; the counters start again when the tuner retunes. Padding is empty "null" packets that fill the fixed rate.</p></dialog>
+  <dialog id="about-dialog" class="info-dialog" aria-labelledby="about-title"><div class="info-header"><div class="tuner-identity"><div class="heading-name"><strong id="about-title">About</strong><span id="about-version" class="section-kicker"></span></div></div><button id="about-close" type="button" class="info-close" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="about-top"><div id="about-mark"></div><div><strong><span class="brand-prefix">HB9</span> MultiTiouner</strong><span>Several MiniTiouners at once, in your browser. By HB9IIU.</span><span>Free software · GNU General Public License v3.0 · MiniTiouner devices only</span><span id="about-update" class="about-update" hidden></span></div></div>
+    <div class="about-section"><h3>How to use</h3><ul>
+      <li><b>Start receiving</b> connects the tuners. The beacon goes on tuner 1 whenever a tuner is spare.</li>
+      <li><b>Click a signal</b> in the spectrum, or drag a numbered marker, to tune a tuner.</li>
+      <li><b>AutoTune</b> gives detected stations to free tuners by itself.</li>
+      <li><b>Stream out</b> sends each tuner's video to VLC, OBS or another PC on your network.</li>
+      <li><b>Record</b> saves every transmission except the beacon into the Recordings folder, one folder per callsign.</li>
+      <li>The <b>i</b> and <b>list</b> buttons on each card show the signal and the transport stream details.</li>
+    </ul></div>
+    <div class="about-section"><h3>Credits</h3><ul>
+      <li><b>Tuner software:</b> Open Tuner by Tom ZR6TG.</li>
+      <li><b>Spectrum and chat:</b> the BATC QO-100 wideband page (eshail.batc.org.uk).</li>
+      <li><b>Video:</b> FFmpeg and MediaMTX.</li>
+    </ul></div>
+    <div class="about-section"><p>This program is free software: you can use, copy and change it under the terms of the GNU General Public License, version 3. The licence text is in the file LICENSE next to the program.</p></div></dialog>
+  <dialog id="settings-dialog" class="info-dialog" aria-labelledby="settings-title"><div class="info-header"><div class="tuner-identity"><div class="heading-name"><strong id="settings-title">Settings</strong><span class="section-kicker">LNB and calibration</span></div></div><button id="settings-close" type="button" class="info-close" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="set-body"><label class="set-label" for="lnb-input">LNB oscillator frequency</label>
+      <div class="set-row"><input id="lnb-input" type="number" step="0.001" inputmode="decimal" list="lnb-common" autocomplete="off"><span class="set-unit">MHz</span><button id="lnb-apply" type="button" class="amber-btn">Apply</button></div>
+      <datalist id="lnb-common"><option value="9750"></option><option value="10000"></option></datalist>
+      <p id="lnb-preview" class="set-preview"></p><div id="lnb-note" class="set-note" role="status"></div></div>
+    <p class="set-help">Enter the value printed on your LNB; many QO-100 LNBs use 9750 MHz. It is applied at once to all tuners and remembered for the next start.</p>
+    <div class="set-body set-cal"><span class="set-label">Frequency calibration</span>
+      <p class="set-text">Every tuner and LNB has a small frequency error. This measures it on the beacon (10491.500 MHz) and corrects it, separately for each tuner. It takes about a minute. The tuners are used for it, and go back to what they were doing afterwards.</p>
+      <div class="set-row"><button id="cal-start" type="button" class="amber-btn" style="margin-left:0">Calibrate with the beacon</button><button id="cal-cancel" type="button" class="ghost-btn" hidden>Cancel</button><button id="cal-reset" type="button" class="ghost-btn" style="margin-left:auto">Reset corrections</button></div>
+      <div id="cal-rows" class="cal-rows"></div><div id="cal-note" class="set-note" role="status"></div></div>
+    <div class="set-body set-upd"><label class="autotune-control"><input id="upd-check" type="checkbox" role="switch"><span>Check GitHub once a day for a new version</span></label><p class="set-text">Only the list of versions of this program is asked for. Nothing about you or your radio is sent.</p></div></dialog>
+  <dialog id="rxinfo" class="info-dialog" aria-labelledby="rxinfo-title">
+    <div class="info-header"><div class="tuner-identity"><span id="rxinfo-num" class="tuner-number"></span><div class="heading-name"><strong id="rxinfo-title"></strong><span class="section-kicker">Signal details</span></div></div><button id="rxinfo-close" type="button" class="info-close" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <dl id="rxinfo-body" class="info-list"></dl>
+  </dialog>
+  <dialog id="discovery" class="discovery-dialog" aria-labelledby="discovery-title" aria-describedby="discovery-description">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="discovery-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="12" width="18" height="9" rx="2"/><path d="M7 12V7m10 5V7M5 4a10 10 0 0 1 14 0M8 7a6 6 0 0 1 8 0"/><circle cx="17" cy="16.5" r="1"/><path d="M7 17h4"/></svg></div>
+        <div class="flex-grow-1"><h2 id="discovery-title" class="h5 mb-1">Tuners detected</h2><p id="discovery-description" class="muted small mb-0"></p></div>
+        <button id="discovery-close" type="button" class="btn-close" aria-label="Close"></button>
+      </div>
+      <div class="modal-body"><div id="discovery-devices" class="d-grid gap-2"></div><p class="muted small mt-3 mb-0">USB interfaces detected. Start receiving to initialize the tuners and begin reception.</p><p id="discovery-error" class="text-danger small mt-2 mb-0" role="alert"></p></div>
+      <div class="modal-footer gap-2"><button id="discovery-exit" type="button" class="btn btn-outline-danger me-auto">Quit</button><button id="discovery-continue" type="button" class="btn btn-success px-4" autofocus>Start receiving</button></div>
+    </div>
+  </dialog>
+
+  <script src="/magic-eye.js"></script>
+  <script src="/startup-scan.js"></script>
+  <script>
+    (() => {
+      const colors = ['#83d6b2','#6fb1ff','#f4b75b','#dc7fef','#ff6e7d','#60d2dc'];
+      const cards = document.getElementById('receivers');
+      const cardElements = new Map();
+      const statusText = {Disconnected:'Disconnected',Waiting:'Connected · waiting for signal',Tuning:'Searching for signal',Locked:'Signal locked'};
+      let state = {receivers:[]}, handles = [], dragging = null, pointerStart = null, spectrum = [], socket;
+
+      async function api(path, body) {
+        const response = await fetch(path, {
+          method: body === undefined ? 'GET' : 'POST',
+          headers: body === undefined ? {} : {'Content-Type':'application/json'},
+          body: body === undefined ? undefined : JSON.stringify(body)
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || response.statusText);
+        return result;
+      }
+
+      const picture=document.getElementById('picture'),pictureStage=document.getElementById('picture-stage');
+      let enlarged=null;
+      const pictureEye=new MagicEye(document.getElementById('picture-eye'));
+      const infoDialog=document.getElementById('rxinfo');let infoNumber=null;
+      function updateInfo(){
+        const receiver=state.receivers.find(r=>r.number===infoNumber);
+        if(!receiver)return;
+        const card=cardElements.get(receiver.number),locked=receiver.state==='Locked';
+        const tuned=receiver.frequencyMhz ?? receiver.initialFrequencyMhz;
+        const carrier=locked && receiver.carrierOffsetHz!=null?(tuned+receiver.carrierOffsetHz/1e6).toFixed(4)+' MHz':'—';
+        const offset=locked && receiver.carrierOffsetHz!=null?(receiver.carrierOffsetHz>=0?'+':'')+(receiver.carrierOffsetHz/1000).toFixed(1)+' kHz':'—';
+        const rows=[
+          ['Provider',card?.providerName||'—'],
+          ['Tuned frequency',receiver.parked?'—':tuned.toFixed(3)+' MHz'],['Carrier frequency',carrier],['Carrier offset',offset],
+          ['Symbol rate',locked && receiver.actualSymbolRateKsps!=null?Math.round(receiver.actualSymbolRateKsps)+' kS/s':'—'],
+          ['Mode',locked&&receiver.mode?receiver.mode:'—'],
+          ['MER',locked && receiver.mer!=null?receiver.mer.toFixed(1)+' dB':'—'],
+          ['Input power',card?.signalLost||receiver.inputPower==null?'—':receiver.inputPower+' dB'],
+          ['Tuner',`${receiver.name||''} · USB ${receiver.serial||'—'}`]];
+        infoDialog.style.setProperty('--channel',card?.column.firstElementChild.style.getPropertyValue('--channel')||'var(--amber)');
+        document.getElementById('rxinfo-num').textContent=receiver.number;
+        document.getElementById('rxinfo-title').textContent=card?.stationName||(receiver.parked?'Parked':'Tuner '+receiver.number);
+        document.getElementById('rxinfo-body').innerHTML=rows.map(([k,v])=>`<div><dt>${k}</dt><dd>${escapeHtml(String(v))}</dd></div>`).join('');
+      }
+      function openInfo(number){infoNumber=number;updateInfo();if(!infoDialog.open)infoDialog.showModal();}
+      infoDialog.addEventListener('close',()=>{infoNumber=null;});
+      infoDialog.addEventListener('click',event=>{if(event.target===infoDialog)infoDialog.close();});
+      document.getElementById('rxinfo-close').addEventListener('click',()=>infoDialog.close());
+      function updatePictureDetails(){
+        if(!enlarged)return;
+        const receiver=state.receivers.find(r=>r.number===enlarged.number);
+        if(!receiver)return;
+        const locked=receiver.state==='Locked';
+        document.getElementById('picture-title').textContent=`Tuner ${receiver.number} · ${enlarged.card.station.textContent}`;
+        const value=(label,text,extra='')=>`<span class="${extra}">${label} <strong>${escapeHtml(text)}</strong></span>`;
+        document.getElementById('picture-rx').innerHTML=[
+          value('RX',(receiver.frequencyMhz ?? receiver.initialFrequencyMhz).toFixed(3)+' MHz'),
+          value('SR',locked && receiver.actualSymbolRateKsps!=null?Math.round(receiver.actualSymbolRateKsps)+' kS/s':'—'),
+          value('Input',!enlarged.card.signalLost&&receiver.inputPower!=null?receiver.inputPower+' dB':'—'),
+          value('MER',locked && receiver.mer!=null?receiver.mer.toFixed(1)+' dB':'—'),
+          value('Mode',locked && receiver.mode?receiver.mode:'—')
+        ].join('');
+        pictureEye.update({...receiver,enabled:state.started,locked},state.started);
+        sizePicture();
+      }
+      function sizePicture(){
+        if(!enlarged)return;
+        const header=picture.querySelector('.picture-header').offsetHeight;
+        const width=Math.floor(Math.max(1,Math.min(innerWidth*.94,1600,(innerHeight*.94-header-2)*16/9)));
+        pictureStage.style.width=width+'px';pictureStage.style.height=Math.round(width*9/16)+'px';
+      }
+      function restorePicture(){
+        if(!enlarged)return;
+        const {card,frame,volume,volumeParent,volumeNext}=enlarged;
+        frame.prepend(card.video);frame.append(card.videoMessage);volumeParent.insertBefore(volume,volumeNext);
+        frame.focus();enlarged=null;pictureEye.update(null);
+      }
+      function closePicture(){picture.close();restorePicture();}
+      function openPicture(card,number){
+        if(!state.receivers.some(r=>r.number===number&&r.state==='Locked'))return;
+        restorePicture();
+        const frame=card.column.querySelector('.video-frame'),volume=card.column.querySelector('.vol');
+        enlarged={card,number,frame,volume,volumeParent:volume.parentNode,volumeNext:volume.nextSibling};
+        pictureStage.append(card.video,card.videoMessage);document.getElementById('picture-volume').append(volume);
+        document.getElementById('picture-title').textContent=`Tuner ${number} · ${card.station.textContent}`;
+        if(!picture.open)picture.showModal();
+        updatePictureDetails();card.video.play().catch(()=>{});
+      }
+      picture.addEventListener('close',restorePicture);
+      picture.addEventListener('click',event=>{if(event.target===picture)closePicture();});
+      pictureStage.addEventListener('click',closePicture);
+      document.getElementById('picture-close').addEventListener('click',closePicture);
+      picture.addEventListener('keydown',event=>{
+        if(!enlarged||!['ArrowLeft','ArrowRight'].includes(event.key)||event.target.matches('input'))return;
+        const available=state.receivers.filter(r=>r.state==='Locked');
+        const index=available.findIndex(r=>r.number===enlarged.number);
+        if(available.length>1){event.preventDefault();const next=available[(index+(event.key==='ArrowRight'?1:-1)+available.length)%available.length];openPicture(cardElements.get(next.number),next.number);}
+      });
+      window.addEventListener('resize',sizePicture);
+
+      function speakerIcon(muted){
+        return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4Z"/>${muted?'<path d="m16 9 5 6m0-6-5 6"/>':'<path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>'}</svg>`;
+      }
+
+      function makeCard(receiver) {
+        const color = colors[(receiver.number - 1) % colors.length];
+        const column = document.createElement('div');
+        column.className = 'col';
+        column.innerHTML = `<article class="receiver-card" style="--channel:${color}">
+          <header class="card-heading" style="border-top:3px solid ${color}"><div class="tuner-identity"><span class="tuner-number" aria-label="Tuner ${receiver.number}" title="${escapeHtml(receiver.name)} · USB ${escapeHtml(receiver.serial)}">${receiver.number}</span><div class="heading-name"><strong class="station">Searching…</strong><span class="provider muted small"></span></div><button class="ts-btn" type="button" aria-label="Transport stream info" title="Transport stream info"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h13"/><path d="M19 12v.01"/><path d="M21 18v.01"/></svg></button></div><div class="header-controls"><div class="ctl-stack"><div class="ctl-row"><div class="vol"><input class="volume form-range" type="range" min="0" max="100" value="80" aria-label="Volume"><button class="audio-toggle" type="button" aria-label="Enable audio" aria-pressed="false">${speakerIcon(true)}</button></div><span class="rec-badge" hidden>REC</span><span class="badge badge-state"></span></div><div class="vu" title="Audio level (also shown while the speaker is off). If it stays still, click once anywhere on the page.">${'<i></i>'.repeat(16)}</div></div><div class="eye header-eye"></div></div></header>
+          <div class="video-frame"><video autoplay muted playsinline></video><div class="video-message">Waiting for a locked signal…</div></div>
+          <div class="card-details">
+            <div class="stats-row"><div class="stat freq-stat"><label>Frequency · MHz<button class="info-btn" type="button" aria-label="More signal info" title="More signal info"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".6" fill="currentColor"/></svg></button></label><div class="freq-shown"></div></div><div class="stat"><label>SR · kS/s</label><strong class="actual-sr">—</strong></div><div class="stat"><label>Input power · dB</label><strong class="power" title="AGC-derived input power estimate">—</strong></div><div class="stat mode-stat"><label>Mode</label><strong class="mode">—</strong></div></div>
+          </div>
+        </article>`;
+        column.querySelector('.info-btn').addEventListener('click',event=>{event.stopPropagation();openInfo(receiver.number);});
+        column.querySelector('.ts-btn').addEventListener('click',event=>{event.stopPropagation();openTs(receiver.number);});
+        const card = {
+          column,
+          badge:column.querySelector('.badge-state'),
+          station:column.querySelector('.station'),
+          video:column.querySelector('video'),
+          videoMessage:column.querySelector('.video-message'),
+          audioToggle:column.querySelector('.audio-toggle'),
+          peer:null,
+          sessionUrl:null,
+          retryTimer:null,
+          videoConnecting:false,
+          videoGeneration:0,
+          lastFrameAt:0,
+          lastFrameCount:0,
+          lockSince:0,
+          tuneKey:null,
+          seenFrames:false,
+          hadLock:false,
+          lossSince:null,
+          signalLost:false,
+          stationName:'',
+          providerName:'',
+          recoveryAt:0
+        };
+        if(card.video.requestVideoFrameCallback){
+          const frameArrived=()=>{
+            if(!card.column.isConnected)return;
+            card.lastFrameAt=performance.now();card.seenFrames=true;
+            card.video.requestVideoFrameCallback(frameArrived);
+          };
+          card.video.requestVideoFrameCallback(frameArrived);
+        }
+        const frame=column.querySelector('.video-frame');
+        frame.tabIndex=0;frame.setAttribute('role','button');frame.setAttribute('aria-label',`Enlarge video for tuner ${receiver.number}`);
+        frame.addEventListener('click',()=>openPicture(card,receiver.number));
+        frame.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openPicture(card,receiver.number);}});
+        card.eye = new MagicEye(column.querySelector('.eye'));
+        const volume=column.querySelector('.volume');
+        card.video.volume=.8;
+        volume.addEventListener('input',()=>{
+          card.video.volume=Number(volume.value)/100;
+          card.video.muted=Number(volume.value)===0;
+          updateAudioControl(card);
+        });
+        card.audioToggle.addEventListener('click',()=>{
+          card.video.muted=!card.video.muted;
+          updateAudioControl(card);
+        });
+        return card;
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+      }
+
+      let spectrumUpdated=0;
+      async function startReceiving() { await api('/api/start',{}); }
+      document.getElementById('autotune').addEventListener('change',async event=>{
+        const input=event.target;input.disabled=true;
+        try { await api('/api/autotune',{enabled:input.checked});await refresh(); }
+        catch(error){input.checked=!input.checked;showError(error);}
+        finally{input.disabled=false;}
+      });
+
+      const discovery = document.getElementById('discovery');
+      let discoveryChecked = false, appStopped = false;
+      function closeDiscovery() {
+        discovery.close();
+        document.getElementById('start').focus();
+      }
+      document.getElementById('discovery-close').addEventListener('click',closeDiscovery);
+      document.getElementById('discovery-continue').addEventListener('click',async()=>{
+        const button=document.getElementById('discovery-continue');
+        button.disabled=true;button.textContent='Starting…';
+        document.getElementById('discovery-error').textContent='';
+        try { await startReceiving();closeDiscovery();await refresh(); }
+        catch(error) {document.getElementById('discovery-error').textContent=error.message;}
+        finally {button.disabled=false;button.textContent='Start receiving';}
+      });
+      document.getElementById('discovery-exit').addEventListener('click',()=>document.getElementById('quit').click());
+      // Start by itself after 3 seconds; any click or key press in the popup cancels the countdown.
+      let countdownTimer=null;
+      function stopCountdown(){
+        if(countdownTimer===null)return;
+        clearInterval(countdownTimer);countdownTimer=null;
+        const button=document.getElementById('discovery-continue');
+        if(!button.disabled)button.textContent='Start receiving';
+      }
+      function startCountdown(){
+        let left=3;
+        const button=document.getElementById('discovery-continue');
+        button.textContent=`Start receiving · ${left}`;
+        countdownTimer=setInterval(()=>{
+          left--;
+          if(left>0){button.textContent=`Start receiving · ${left}`;return;}
+          clearInterval(countdownTimer);countdownTimer=null;
+          if(discovery.open&&!button.disabled)button.click();
+        },1000);
+      }
+      for(const type of ['pointerdown','keydown'])discovery.addEventListener(type,event=>{if(event.target.id!=='discovery-continue'||type==='keydown')stopCountdown();});
+      discovery.addEventListener('close',stopCountdown);
+      function showDiscovery() {
+        if(discoveryChecked || !state.sessionId)return;
+        discoveryChecked=true;
+        const key='discovery:'+state.sessionId;
+        try { if(sessionStorage.getItem(key))return; } catch {}
+        if(state.started)return;
+        const count=state.receivers.length;
+        document.getElementById('discovery-description').textContent=`${count} MiniTiouner${count===1?'':'s'} detected.`;
+        document.getElementById('discovery-devices').replaceChildren(...state.receivers.map(receiver=>{
+          const row=document.createElement('div');
+          row.className='discovery-device';
+          row.innerHTML=`<span class="discovery-number">${receiver.number}</span><div><strong>${escapeHtml(receiver.name)}</strong><small>USB serial · ${escapeHtml(receiver.serial)}</small><details class="mt-2"><summary class="small" style="color:var(--amber)">More…</summary><dl class="device-info small mt-2 mb-0"><dt>FTDI chip</dt><dd>FT2232H</dd><dt>USB description</dt><dd>${escapeHtml(receiver.usbDescription || 'Unavailable')}</dd><dt>D2XX driver</dt><dd>${escapeHtml(receiver.driverVersion || 'Unavailable')}</dd><dt>Interfaces</dt><dd>Control A + transport B detected</dd><dt>Status</dt><dd>Detected; not initialized yet</dd></dl></details></div>`;
+          return row;
+        }));
+        document.getElementById('discovery-continue').disabled=count===0;
+        discovery.showModal();
+        if(count>0)startCountdown();
+        try { sessionStorage.setItem(key,'seen'); } catch {}
+      }
+
+      function updateSignalState(card,receiver){
+        const now=performance.now(),locked=receiver.state==='Locked';
+        if(receiver.parked){
+          card.signalLost=false;card.hadLock=false;card.lossSince=null;card.stationName='';card.providerName='';card.lastFrameAt=0;card.seenFrames=false;card.video.style.visibility='hidden';return;
+        }
+        const key=`${receiver.frequencyMhz}:${receiver.symbolRateKsps}`;
+        if(card.signalTuneKey!==key){
+          card.signalTuneKey=key;card.hadLock=false;card.lossSince=null;card.signalLost=false;
+          card.stationName='';card.providerName='';card.recoveryAt=now;
+        }
+        if(locked){
+          if(card.signalLost){card.recoveryAt=now;card.lastFrameAt=0;card.seenFrames=false;}
+          card.hadLock=true;card.lossSince=null;card.signalLost=false;
+          card.stationName=receiver.station || '';card.providerName=receiver.provider || '';
+        } else if(state.started&&card.hadLock){
+          if(card.lossSince===null)card.lossSince=now;
+          card.signalLost=now-card.lossSince>=5000;
+          if(card.signalLost){card.stationName='';card.providerName='';}
+        }
+        card.video.style.visibility=card.signalLost || (card.recoveryAt>0&&card.lastFrameAt<=card.recoveryAt)?'hidden':'';
+      }
+
+      // version number and build time (from the running exe), in the footer and the tab title
+      let versionShown='';
+      function showVersion(){
+        if(!state.version||versionShown===state.version+state.built)return;
+        versionShown=state.version+state.built;
+        const built=state.built?new Date(state.built):null,when=built&&!isNaN(built)?built.toLocaleString([],{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+        document.getElementById('app-version').textContent='v'+state.version+(when?' · built '+when:'');
+        const tag=document.getElementById('header-version');tag.textContent='v'+state.version;tag.title=when?'Built '+when:'';tag.hidden=false;
+        document.title='HB9 MultiTiouner v'+state.version;
+      }
+      // the recorder: switch state, a REC mark on each recording card, a warning if the disk is nearly full
+      function showRecorder(){
+        const rec=state.recorder;
+        if(!rec)return;
+        const input=document.getElementById('record');
+        if(!input.disabled)input.checked=!!rec.enabled;
+        for(const [number,card] of cardElements){
+          const badge=card.column.querySelector('.rec-badge'),item=rec.recording.find(r=>r.number===number);
+          if(!badge)continue;
+          badge.hidden=!item;
+          if(item)badge.title='Recording '+item.callsign+' · '+item.megabytes+' MB';
+        }
+        const count=document.getElementById('rec-count');
+        count.hidden=!rec.recording.length;count.textContent=rec.recording.length?'● '+rec.recording.length:'';
+        const note=document.getElementById('rec-note');
+        note.hidden=!rec.warning;note.textContent=rec.warning||'';
+      }
+      document.getElementById('record').addEventListener('change',async event=>{
+        const input=event.target;input.disabled=true;
+        try{await api('/api/recorder',{enabled:input.checked});}
+        catch(error){input.checked=!input.checked;showError(error);}
+        finally{input.disabled=false;}
+        try{await refresh();}catch{}
+      });
+      // ---- A newer version on GitHub: a bar under the header, a line in Help ----
+      function showUpdate(){
+        const u=state.update,bar=document.getElementById('update-bar'),line=document.getElementById('about-update');
+        let dismissed='';try{dismissed=localStorage.getItem('updateDismissed')||'';}catch{}
+        const link=u&&typeof u.url==='string'&&u.url.startsWith('https://github.com/')?u.url:'#';
+        const available=!!(u&&u.available);
+        bar.hidden=!(available&&u.version!==dismissed);
+        line.hidden=!available;
+        if(!available)return;
+        document.getElementById('update-text').textContent='Version '+u.version+' is available. You have '+u.current+'.';
+        document.getElementById('update-link').href=link;
+        const anchor=Object.assign(document.createElement('a'),{href:link,target:'_blank',rel:'noopener noreferrer',textContent:'See what is new and download'});
+        line.replaceChildren(document.createTextNode('Version '+u.version+' is available. '),anchor);
+      }
+      document.getElementById('update-later').addEventListener('click',()=>{
+        try{localStorage.setItem('updateDismissed',(state.update&&state.update.version)||'');}catch{}
+        document.getElementById('update-bar').hidden=true;
+      });
+      const updCheck=document.getElementById('upd-check');
+      updCheck.addEventListener('change',async()=>{
+        updCheck.disabled=true;
+        try{settingsData=await api('/api/settings',{checkUpdates:updCheck.checked});}
+        catch(error){updCheck.checked=!updCheck.checked;lnbNote.textContent=error.message;lnbNote.className='set-note bad';}
+        finally{updCheck.disabled=false;}
+      });
+      async function refresh() {
+        if(appStopped)return;
+        state = await api('/api/state');
+        showDiscovery();
+        showVersion();
+        showRecorder();
+        showUpdate();
+        const autoInput=document.getElementById('autotune');
+        if(!autoInput.disabled)autoInput.checked=!!state.autoTune;
+        document.getElementById('scan-status').textContent=state.scanStatus||'';
+        document.getElementById('summary').textContent = `${state.receivers.filter(item => item.connected).length} of ${state.receivers.length} MiniTiouner(s) connected`;
+        document.getElementById('start').disabled = state.started;
+        document.getElementById('start').hidden = state.started;
+        cards.style.setProperty('--receiver-columns',Math.max(3,Math.min(4,state.receivers.length)));
+        const cardKeys = state.receivers.map(receiver => receiver.number + ':' + receiver.serial).join('|');
+        if (cards.dataset.cardKeys !== cardKeys) {
+          closePicture();
+          cardElements.clear();
+          const entries = state.receivers.map(receiver => {
+            const card = makeCard(receiver);
+            cardElements.set(receiver.number, card);
+            if(state.started)connectVideo(receiver.number);
+            return card.column;
+          });
+          cards.replaceChildren(...entries);
+          cards.dataset.cardKeys = cardKeys;
+        }
+        state.receivers.forEach(receiver => {
+          const card = cardElements.get(receiver.number);
+          const assignmentKey=`${receiver.parked}:${receiver.frequencyMhz}:${receiver.symbolRateKsps}`;
+          if(card.assignmentKey!==undefined&&card.assignmentKey!==assignmentKey)reconnectVideo(receiver.number);
+          card.assignmentKey=assignmentKey;
+          updateSignalState(card,receiver);
+          card.badge.textContent = !state.started ? 'STOPPED' : receiver.parked ? 'PARKED' : receiver.state === 'Locked' ? 'LOCKED' : card.signalLost ? 'NO SIGNAL' : receiver.state === 'Disconnected' ? 'OFFLINE' : 'SEARCHING';
+          card.badge.title = statusText[receiver.state] || receiver.state;
+          card.badge.classList.toggle('locked', receiver.state === 'Locked');
+          const locked=receiver.state==='Locked';
+          card.column.querySelector('.video-frame').classList.toggle('can-expand',locked);
+          card.station.textContent=receiver.parked?(state.started?'Parked':'Ready'):card.signalLost?'No signal':card.stationName || (locked?'Signal locked':state.started?'Searching…':'Stopped');
+          card.column.querySelector('.provider').textContent=card.providerName;
+          const frequency=receiver.frequencyMhz ?? receiver.initialFrequencyMhz;
+          card.column.querySelector('.freq-shown').textContent=receiver.parked?'—':frequency.toFixed(3);
+          card.column.querySelector('.power').textContent=card.signalLost?'—':receiver.inputPower ?? '—';
+          card.column.querySelector('.mode').textContent=locked?receiver.mode || '—':'—';
+          card.column.querySelector('.actual-sr').textContent=receiver.parked?'—':locked && receiver.actualSymbolRateKsps!=null?Math.round(receiver.actualSymbolRateKsps):(receiver.symbolRateKsps ?? receiver.initialSymbolRateKsps ?? '—');
+          card.eye.update({...receiver,enabled:state.started,locked},state.started);
+          if(enlarged?.number===receiver.number)updatePictureDetails();
+          if(infoNumber===receiver.number)updateInfo();
+          updateVideoStatus(card,receiver);
+          if(state.started && !receiver.parked && !card.peer && !card.videoConnecting && !card.retryTimer)
+            connectVideo(receiver.number);
+        });
+        updateStartupToast();
+        if(dragging===null) {
+          const parked=state.receivers.filter(item=>item.parked);
+          const parkStep=Math.min(.2,1.0/Math.max(1,parked.length));
+          handles = state.started?state.receivers.filter(item=>item.connected).map(item=>({
+            number:item.number,
+            parked:item.parked,
+            frequencyMhz:item.parked?10491.5+parkStep*(parked.findIndex(p=>p.number===item.number)+1):item.frequencyMhz,
+            symbolRateKsps:item.symbolRateKsps,
+            color:colors[(item.number-1)%colors.length]
+          })):[];
+          draw();
+        }
+      }
+
+      // Centered progress toast after start: one line per tuner, closes by itself when all are settled (or after 25 s).
+      const startupToast=document.getElementById('startup-toast');
+      let toastStartedAt=0,toastFirstSeen=0,toastDone=false,toastTimer=null,toastWasStarted=false,toastSession='';
+      function toastStatus(card,receiver){
+        const now=performance.now();
+        if(receiver.state==='Disconnected')return now-toastStartedAt>12000?{text:'Disconnected',done:true,cls:'bad'}:{text:'Connecting…',done:false,cls:''};
+        if(card&&card.seenFrames&&now-card.lastFrameAt<5000)return {text:'Video OK',done:true,cls:'ok'};
+        if(receiver.state!=='Locked')return now-toastStartedAt>12000?{text:'No lock',done:true,cls:'bad'}:{text:'Tuning…',done:false,cls:''};   // a tuner that cannot lock does not hold the toast open
+        if(receiver.video&&receiver.video.problem==='unsupported')return {text:'Locked · video not supported',done:true,cls:'bad'};
+        if(card&&card.lockSince&&now-card.lockSince>=8000)return {text:'Locked · no video',done:true,cls:'bad'};
+        return {text:'Locked · waiting for video…',done:false,cls:'wait'};
+      }
+      function closeStartupToast(){
+        toastDone=true;clearTimeout(toastTimer);
+        startupToast.classList.add('fade');
+        setTimeout(()=>startupToast.classList.remove('show','fade'),380);
+      }
+      startupToast.addEventListener('click',closeStartupToast);
+      function updateStartupToast(){
+        // a new start (the app was restarted or reception started again while this tab stayed open) shows the toast again
+        const startedNow=!!state.started;
+        if(startedNow&&(!toastWasStarted||state.sessionId!==toastSession)){
+          toastDone=false;toastStartedAt=0;toastFirstSeen=0;clearTimeout(toastTimer);toastTimer=null;
+          startupToast.classList.remove('show','fade');
+        }
+        toastWasStarted=startedNow;toastSession=state.sessionId;
+        if(toastDone||appStopped||!startedNow)return;
+        const now=performance.now(),active=state.receivers.filter(r=>!r.parked);
+        if(!toastStartedAt){
+          if(!toastFirstSeen)toastFirstSeen=now;
+          if(!active.length){if(now-toastFirstSeen>5000)toastDone=true;return;}
+          toastStartedAt=now;startupToast.classList.add('show');
+        }
+        const lines=active.map(receiver=>{
+          const status=toastStatus(cardElements.get(receiver.number),receiver);
+          const row=document.createElement('div');row.className='st-row';
+          const number=document.createElement('span');number.className='tuner-number';number.textContent=receiver.number;number.style.setProperty('--channel',colors[(receiver.number-1)%colors.length]);
+          const frequency=document.createElement('span');frequency.className='st-freq';frequency.textContent=(receiver.frequencyMhz??receiver.initialFrequencyMhz).toFixed(3)+' MHz';
+          const text=document.createElement('span');text.className='st-state '+status.cls;text.textContent=status.text;
+          row.append(number,frequency,text);return {row,done:status.done};
+        });
+        document.getElementById('st-rows').replaceChildren(...lines.map(l=>l.row));
+        const finished=lines.every(l=>l.done);
+        startupToast.classList.toggle('st-done',finished);
+        document.getElementById('st-title').textContent=finished?'Receivers ready':'Starting receivers…';
+        if(finished){if(!toastTimer)toastTimer=setTimeout(closeStartupToast,1200);}
+        else{clearTimeout(toastTimer);toastTimer=null;if(now-toastStartedAt>25000)closeStartupToast();}
+      }
+
+      function updateVideoStatus(card,receiver){
+        const now=performance.now(),locked=receiver.state==='Locked';
+        if(receiver.parked){card.videoMessage.textContent=state.started?(state.autoTune?'Parked · waiting for a transmission':'Parked · drag a marker onto a signal'):'Ready to receive';return;}
+        const tuneKey=`${receiver.frequencyMhz}:${receiver.symbolRateKsps}`;
+        if(card.tuneKey!==tuneKey){
+          card.tuneKey=tuneKey;card.lastFrameAt=0;card.lastFrameCount=0;card.seenFrames=false;card.lockSince=0;
+        }
+        if(!card.video.requestVideoFrameCallback){
+          const frames=card.video.getVideoPlaybackQuality?.().totalVideoFrames ?? 0;
+          if(frames>card.lastFrameCount){card.lastFrameAt=now;card.seenFrames=true;}
+          card.lastFrameCount=frames;
+        }
+        if(!locked){
+          card.lockSince=0;
+          card.videoMessage.textContent=card.signalLost?'Signal lost · waiting for transmission':!state.started?'Reception not started':receiver.state==='Disconnected'?'MiniTiouner disconnected':card.hadLock?'Signal interrupted…':'Waiting for a locked signal…';
+          return;
+        }
+        if(!card.lockSince)card.lockSince=now;
+        if(card.seenFrames&&now-card.lastFrameAt<5000){card.videoMessage.textContent='';return;}
+        const diagnostic=receiver.video||{};
+        const names={vvc:'VVC (H.266)',hevc:'HEVC (H.265)',h264:'H.264 (AVC)',av1:'AV1',mpeg2video:'MPEG-2'};
+        const codec=names[diagnostic.codec]||diagnostic.codec;
+        if(diagnostic.problem==='unsupported')
+          card.videoMessage.textContent=codec?`Video codec ${codec} is not supported`:'Video codec is not supported';
+        else if(now-card.lockSince<8000)
+          card.videoMessage.textContent='Locked · waiting for video…';
+        else if(card.seenFrames)
+          card.videoMessage.textContent='Video interrupted';
+        else if(diagnostic.problem==='decode-error')
+          card.videoMessage.textContent=codec?`Unable to decode video (${codec})`:'Unable to decode video';
+        else
+          card.videoMessage.textContent=codec?`Locked · no video (${codec})`:'Locked · no video';
+      }
+
+      function showError(error) {
+        document.getElementById('summary').textContent = error.message;
+        document.getElementById('summary').classList.add('text-warning');
+      }
+
+      function updateAudioControl(card) {
+        const audible=!card.video.muted&&card.video.volume>0;
+        card.audioToggle.innerHTML=speakerIcon(!audible);
+        card.audioToggle.title=card.video.muted?'Enable audio':'Mute audio';
+        card.audioToggle.setAttribute('aria-label',card.audioToggle.title);
+        card.audioToggle.setAttribute('aria-pressed',String(audible));
+        if(audible)card.video.play().catch(()=>{});
+      }
+
+      // ---- audio level meter: reads the received audio, never changes what you hear ----
+      let vuContext=null,vuFrameAt=0,vuResumeAt=0;
+      function vuAttach(card,track){
+        vuDetach(card);
+        try{
+          if(!vuContext)vuContext=new (window.AudioContext||window.webkitAudioContext)();
+          if(vuContext.state==='suspended')vuContext.resume().catch(()=>{});   // allowed once you have clicked on the page
+          card.vuSource=vuContext.createMediaStreamSource(new MediaStream([track]));
+          card.vuAnalyser=vuContext.createAnalyser();card.vuAnalyser.fftSize=1024;
+          card.vuBuffer=new Float32Array(card.vuAnalyser.fftSize);
+          card.vuSource.connect(card.vuAnalyser);
+        }catch{card.vuAnalyser=null;}
+      }
+      function vuDetach(card){
+        try{card.vuSource?.disconnect();}catch{}
+        card.vuSource=null;card.vuAnalyser=null;
+      }
+      for(const type of ['pointerdown','keydown'])document.addEventListener(type,()=>{if(vuContext&&vuContext.state==='suspended')vuContext.resume().catch(()=>{});},true);
+      function vuTick(now){
+        requestAnimationFrame(vuTick);
+        if(now-vuFrameAt<33)return;
+        vuFrameAt=now;
+        // the browser starts audio only after a click on the page; keep trying (about once a second) until it lets us
+        if(vuContext&&vuContext.state==='suspended'&&now-vuResumeAt>1000){
+          vuResumeAt=now;
+          if(!navigator.userActivation||navigator.userActivation.hasBeenActive)vuContext.resume().catch(()=>{});
+        }
+        const vuWaiting=!vuContext||vuContext.state!=='running';
+        for(const card of cardElements.values()){
+          const bar=card.vuBar||(card.vuBar=card.column.querySelector('.vu'));
+          if(bar)bar.classList.toggle('wait',vuWaiting&&!!card.vuAnalyser);
+          let level=0;
+          if(card.vuAnalyser&&vuContext&&vuContext.state==='running'){
+            card.vuAnalyser.getFloatTimeDomainData(card.vuBuffer);
+            let sum=0;for(let i=0;i<card.vuBuffer.length;i++)sum+=card.vuBuffer[i]*card.vuBuffer[i];
+            const db=20*Math.log10(Math.max(Math.sqrt(sum/card.vuBuffer.length),1e-5));
+            level=Math.max(0,Math.min(1,(db+54)/54));   // -54 dB (silent) .. 0 dB (full scale)
+          }
+          card.vuLevel=Math.max(level,(card.vuLevel||0)-0.04);                    // fast attack, slow release
+          if(level>=(card.vuPeak||0)){card.vuPeak=level;card.vuPeakAt=now;}
+          else if(now-(card.vuPeakAt||0)>900)card.vuPeak=Math.max(level,card.vuPeak-0.025);   // peak marker falls after a moment
+          const lit=Math.round(card.vuLevel*16),peak=Math.round(card.vuPeak*16)-1,key=lit+':'+peak;
+          if(key===card.vuKey)continue;
+          card.vuKey=key;
+          const segments=card.vuSegments||(card.vuSegments=card.column.querySelectorAll('.vu i'));
+          segments.forEach((segment,index)=>{segment.classList.toggle('on',index<lit);segment.classList.toggle('pk',index>=lit&&index===peak&&peak>=0);});
+        }
+      }
+      requestAnimationFrame(vuTick);
+
+      function reconnectVideo(number) {
+        const card=cardElements.get(number);
+        if(!card)return;
+        card.videoGeneration++;
+        card.videoConnecting=false;
+        if(card.retryTimer){clearTimeout(card.retryTimer);card.retryTimer=null;}
+        if(card.peer)card.peer.close();
+        card.peer=null;
+        if(card.sessionUrl)fetch(card.sessionUrl,{method:'DELETE'}).catch(()=>{});
+        card.sessionUrl=null;
+        card.lastFrameAt=0;card.seenFrames=false;card.lockSince=0;
+        vuDetach(card);
+        card.video.srcObject=null;
+        if(state.started&&!state.receivers.find(r=>r.number===number)?.parked)connectVideo(number);
+      }
+
+      function waitForIceGathering(peer) {
+        if(peer.iceGatheringState==='complete')return Promise.resolve();
+        return new Promise(resolve=>{
+          const timeout=setTimeout(finish,3000);
+          function finish(){
+            clearTimeout(timeout);
+            peer.removeEventListener('icegatheringstatechange',check);
+            resolve();
+          }
+          function check(){if(peer.iceGatheringState==='complete')finish();}
+          peer.addEventListener('icegatheringstatechange',check);
+        });
+      }
+
+      async function connectVideo(number) {
+        const card=cardElements.get(number);
+        if(!card||!state.started||state.receivers.find(r=>r.number===number)?.parked||card.videoConnecting||card.peer)return;
+        card.videoConnecting=true;
+        const generation=card.videoGeneration;
+        try{
+          const peer=new RTCPeerConnection({iceServers:[]});
+          card.peer=peer;
+          peer.addTransceiver('video',{direction:'recvonly'});
+          peer.addTransceiver('audio',{direction:'recvonly'});
+          peer.ontrack=event=>{
+            if(card.peer!==peer)return;
+            card.video.srcObject=event.streams[0]||new MediaStream([event.track]);
+            card.video.play().catch(()=>{});
+            if(event.track.kind==='audio')vuAttach(card,event.track);
+          };
+          peer.onconnectionstatechange=()=>{
+            if(peer.connectionState==='failed'||peer.connectionState==='disconnected'){
+              if(card.peer===peer)reconnectLater(number,card);
+            }
+          };
+          const offer=await peer.createOffer();
+          await peer.setLocalDescription(offer);
+          await waitForIceGathering(peer);
+          if(generation!==card.videoGeneration)return;
+          const endpoint=`http://${location.hostname}:${state.webRtcPort}/tuner${number}/whep`;
+          const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/sdp'},body:peer.localDescription.sdp});
+          if(generation!==card.videoGeneration)return;
+          if(response.status!==201)throw new Error('Waiting for video from tuner '+number);
+          const session=response.headers.get('Location');
+          card.sessionUrl=session?new URL(session,endpoint).href:null;
+          await peer.setRemoteDescription({type:'answer',sdp:await response.text()});
+        }catch(error){
+          if(generation!==card.videoGeneration)return;
+          if(card.peer){card.peer.close();card.peer=null;}
+          reconnectLater(number,card);
+        }finally{
+          if(generation===card.videoGeneration)card.videoConnecting=false;
+        }
+      }
+
+      function reconnectLater(number,card) {
+        if(card.retryTimer)return;
+        vuDetach(card);
+        if(card.peer){card.peer.close();card.peer=null;}
+        if(card.sessionUrl)fetch(card.sessionUrl,{method:'DELETE'}).catch(()=>{});
+        card.sessionUrl=null;
+        card.retryTimer=setTimeout(()=>{
+          card.retryTimer=null;
+          connectVideo(number);
+        },2000);
+      }
+
+      const canvas = document.getElementById('spectrum'), context = canvas.getContext('2d');
+      let spectrumDisplayTop=0;
+      function draw() {
+        const bounds = canvas.getBoundingClientRect(), scale = window.devicePixelRatio || 1;
+        canvas.width = Math.max(1, Math.round(bounds.width * scale));
+        canvas.height = Math.max(1, Math.round(bounds.height * scale));
+        context.setTransform(scale,0,0,scale,0,0);
+        const width = bounds.width, height = bounds.height;
+        const background=context.createLinearGradient(0,0,0,height);
+        background.addColorStop(0,'#15150f');background.addColorStop(.5,'#10120f');background.addColorStop(1,'#0e100e');
+        context.fillStyle=background;context.fillRect(0,0,width,height);
+        context.strokeStyle='#a47d1426';context.lineWidth=1;
+        for(let i=1;i<10;i++){const x=width*i/10;context.beginPath();context.moveTo(x,0);context.lineTo(x,height);context.stroke();}
+        for(let i=1;i<5;i++){const y=height*i/5;context.beginPath();context.moveTo(0,y);context.lineTo(width,y);context.stroke();}
+        // Fit the trace vertically, reserving only the marker and callsign space.
+        // This changes the display scale only; detection uses the original samples.
+        if(spectrum.length){
+          let peak=1;
+          for(const value of spectrum)peak=Math.max(peak,value);
+          spectrumDisplayTop=spectrumDisplayTop===0?peak:Math.max(peak,spectrumDisplayTop*.98);
+        }
+        const plotY=value=>height-8-(value/Math.max(1,spectrumDisplayTop))*(height-60);
+        if(spectrum.length){
+          const trace=()=>{context.beginPath();spectrum.forEach((value,index)=>{
+            const x=width*index/(spectrum.length-1),y=plotY(value);
+            index?context.lineTo(x,y):context.moveTo(x,y);
+          });};
+          trace();context.lineTo(width,height);context.lineTo(0,height);context.closePath();
+          const fill=context.createLinearGradient(0,0,0,height);fill.addColorStop(0,'#f7be1824');fill.addColorStop(1,'#f7be1802');context.fillStyle=fill;context.fill();
+          trace();context.strokeStyle='#edc15c';context.lineWidth=1.5;context.shadowColor='#e4b85b';context.shadowBlur=3;context.stroke();context.shadowBlur=0;
+          context.fillStyle='#f6c85008';for(let y=0;y<height;y+=3)context.fillRect(0,y,width,1);
+        }else{
+          context.fillStyle='#bd9440';context.font='13px Consolas,monospace';context.textAlign='center';
+          context.fillText('Waiting for BATC spectrum data…',width/2,height/2);
+        }
+        handles.forEach(handle=>{
+          const x=(handle.frequencyMhz-10490.5)/9*width;
+          context.strokeStyle=handle.color;context.lineWidth=2;
+          context.beginPath();context.moveTo(x,0);context.lineTo(x,handle.parked?height*.75:height);context.stroke();
+          context.fillStyle=handle.color;context.beginPath();context.moveTo(x-12,0);context.lineTo(x+12,0);context.lineTo(x,16);context.closePath();context.fill();
+          context.fillStyle='#071018';context.font='bold 11px Segoe UI';context.textAlign='center';context.fillText(String(handle.number),x,11);
+        });
+        // Labels are decoded service names, never inferred from the BATC trace.
+        const occupied=[];
+        context.font='600 12px Segoe UI';context.textAlign='center';
+        state.receivers.forEach(receiver=>{
+          const card=cardElements.get(receiver.number);
+          if(!card?.stationName || card.signalLost || !spectrum.length || receiver.frequencyMhz==null)return;
+          const frequency=receiver.frequencyMhz;
+          const x=(frequency-10490.5)/9*width;
+          if(x<0||x>width||receiver.parked)return;
+          const sr=receiver.symbolRateKsps || 333;
+          const from=Math.max(0,Math.floor((frequency-sr/2000-10490.5)/9*(spectrum.length-1)));
+          const to=Math.min(spectrum.length-1,Math.ceil((frequency+sr/2000-10490.5)/9*(spectrum.length-1)));
+          let peak=0;for(let i=from;i<=to;i++)peak=Math.max(peak,spectrum[i]);
+          let name=card.stationName;
+          const maxWidth=Math.min(180,width-20);
+          while(name.length>1&&context.measureText(name).width>maxWidth)name=name.slice(0,-2)+'…';
+          const labelWidth=context.measureText(name).width+14;
+          const center=Math.max(labelWidth/2+4,Math.min(width-labelWidth/2-4,x));
+          let top=Math.max(22,plotY(peak)-26);
+          for(let attempt=0;attempt<6;attempt++){
+            if(!occupied.some(r=>Math.abs(center-r.x)<(labelWidth+r.w)/2+4&&Math.abs(top-r.y)<22))break;
+            top=top>=46?top-23:top+46;
+          }
+          occupied.push({x:center,y:top,w:labelWidth});
+          context.fillStyle='#100d06ee';context.fillRect(center-labelWidth/2,top,labelWidth,20);
+          context.strokeStyle='#8f711b';context.lineWidth=1;context.strokeRect(center-labelWidth/2,top,labelWidth,20);
+          context.fillStyle='#ffe29a';context.fillText(name,center,top+14);
+        });
+      }
+
+      function tuneDrag(event) {
+        if(dragging===null)return;
+        const rect=canvas.getBoundingClientRect(),mhz=10490.5+Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width))*9;
+        const handle=handles.find(item=>item.number===dragging);
+        if(handle)handle.frequencyMhz=mhz;
+        draw();
+      }
+      // Same smoothed half-height carrier estimate as SDR-Tiouner's estimateBatc.
+      function detectSignal(frequencyMhz) {
+        if(spectrum.length<8)return null;
+        const low=10490.5,high=10499.5,n=spectrum.length,step=(high-low)/(n-1);
+        const sm=spectrum.map((_,i)=>{
+          let sum=0,count=0;
+          for(let k=-3;k<=3;k++){const j=i+k;if(j>=0&&j<n){sum+=spectrum[j];count++;}}
+          return sum/count;
+        });
+        const noise=[...sm].sort((a,b)=>a-b)[Math.floor(n/2)];
+        const bin=Math.max(0,Math.min(n-1,Math.round((frequencyMhz-low)/step))),radius=Math.round(.15/step);
+        let peak=Math.max(0,bin-radius);
+        for(let i=peak;i<=Math.min(n-1,bin+radius);i++)if(sm[i]>sm[peak])peak=i;
+        if(sm[peak]-noise<2000)return null;
+        const half=noise+(sm[peak]-noise)*.5;
+        let left=peak,right=peak;
+        while(left>0&&sm[left-1]>half)left--;
+        while(right<n-1&&sm[right+1]>half)right++;
+        const centerMhz=low+(left+right)*.5*step;
+        if(Math.abs(centerMhz-10491.5)<.3)return {centerMhz:10491.5,symbolRateKsps:1500};
+        const measured=(right-left+1)*step*1000;
+        const rates=[25,33,50,66,125,250,333,500,1000,1500,2000];
+        const symbolRateKsps=rates.reduce((best,rate)=>Math.abs(Math.log(rate/measured))<Math.abs(Math.log(best/measured))?rate:best,rates[0]);
+        return {centerMhz,symbolRateKsps};
+      }
+      async function tuneFromSpectrum(event) {
+        const rect=canvas.getBoundingClientRect();
+        const clickedMhz=10490.5+Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width))*9;
+        const signal=detectSignal(clickedMhz);
+        const status=document.getElementById('spectrumStatus');
+        if(!signal){
+          status.textContent=spectrum.length<8
+            ?'BATC spectrum data is not available yet.'
+            :`No signal detected near ${clickedMhz.toFixed(3)} MHz. Click within a visible signal.`;
+          return;
+        }
+        if(!state.started){
+          status.textContent='Start receiving before tuning a signal from the spectrum.';
+          return;
+        }
+        const receivers=state.receivers.filter(receiver=>receiver.connected);
+        if(!receivers.length){
+          status.textContent='No connected tuner is available.';
+          return;
+        }
+        const free=receivers.filter(r=>r.parked);
+        const onBeacon=receivers.filter(r=>!r.parked&&Math.abs((r.frequencyMhz??0)-10491.5)<.001);
+        const eligible=free.length?free:onBeacon.length?onBeacon:receivers;
+        const receiver=eligible.reduce((nearest,item)=>{
+          const position=r=>handles.find(h=>h.number===r.number)?.frequencyMhz ?? r.frequencyMhz ?? 10491.5;
+          return Math.abs(position(item)-signal.centerMhz)<Math.abs(position(nearest)-signal.centerMhz)?item:nearest;
+        });
+        const centerMhz=Math.round(signal.centerMhz*1000)/1000;
+        const handle=handles.find(item=>item.number===receiver.number);
+        if(handle){handle.frequencyMhz=centerMhz;handle.symbolRateKsps=signal.symbolRateKsps;draw();}
+        status.textContent=`Signal detected at ${centerMhz.toFixed(3)} MHz (~${signal.symbolRateKsps} kS/s). Tuning tuner ${receiver.number}…`;
+        try{
+          await api('/api/tune',{number:receiver.number,frequencyMhz:centerMhz,symbolRateKsps:signal.symbolRateKsps});
+          reconnectVideo(receiver.number);
+          await refresh();
+          status.textContent=`Tuner ${receiver.number} tuned to ${centerMhz.toFixed(3)} MHz at ${signal.symbolRateKsps} kS/s.`;
+        }catch(error){
+          status.textContent=`Could not tune tuner ${receiver.number}: ${error.message}`;
+        }
+      }
+      canvas.addEventListener('pointerdown',event=>{
+        const rect=canvas.getBoundingClientRect(),x=event.clientX-rect.left;
+        const handle=handles.reduce((best,item)=>Math.abs((item.frequencyMhz-10490.5)/9*rect.width-x)<(best?Math.abs((best.frequencyMhz-10490.5)/9*rect.width-x):24)?item:best,null);
+        pointerStart={x:event.clientX,y:event.clientY};
+        dragging=handle?handle.number:null;
+        canvas.setPointerCapture(event.pointerId);
+      });
+      canvas.addEventListener('pointermove',tuneDrag);
+      canvas.addEventListener('pointerup',async event=>{
+        if(!pointerStart)return;
+        tuneDrag(event);
+        const moved=Math.hypot(event.clientX-pointerStart.x,event.clientY-pointerStart.y)>3;
+        pointerStart=null;
+        if(dragging===null||!moved){
+          dragging=null;
+          await tuneFromSpectrum(event);
+          return;
+        }
+        const handle=handles.find(item=>item.number===dragging);
+        dragging=null;
+        if(!handle)return;
+        const signal=detectSignal(handle.frequencyMhz);
+        if(signal){
+          handle.frequencyMhz=Math.round(signal.centerMhz*1000)/1000;
+          handle.symbolRateKsps=signal.symbolRateKsps;
+          draw();
+        }
+        try{await api('/api/tune',{number:handle.number,frequencyMhz:handle.frequencyMhz,symbolRateKsps:handle.symbolRateKsps || 1000});reconnectVideo(handle.number);await refresh();}
+        catch(error){showError(error);}
+      });
+      canvas.addEventListener('pointercancel',()=>{
+        pointerStart=null;
+        dragging=null;
+        refresh().catch(showError);
+      });
+      window.addEventListener('resize',draw);
+      document.getElementById('start').addEventListener('click',async()=>{
+        try{await startReceiving();await refresh();}catch(error){showError(error);}
+      });
+      // After Quit the page is replaced by a plain black screen, so nothing looks alive any more.
+      function showStoppedScreen(){
+        for(const card of cardElements.values()){try{card.peer?.close();}catch{}}
+        document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());
+        const screen=document.getElementById('stopped-screen'),mark=document.querySelector('.brand-mark');
+        if(mark&&!screen.querySelector('svg'))screen.prepend(mark.cloneNode(true));
+        screen.hidden=false;document.title='HB9 MultiTiouner · stopped';
+        try{window.close();}catch{}   // works only if the browser allows it; otherwise the message stays
+      }
+      const quitDialog=document.getElementById('quit-dialog');
+      document.getElementById('quit').addEventListener('click',()=>{if(!appStopped&&!quitDialog.open)quitDialog.showModal();});
+      document.getElementById('quit-cancel').addEventListener('click',()=>quitDialog.close());
+      document.getElementById('quit-ok').addEventListener('click',async()=>{
+        quitDialog.close();
+        try{await api('/api/shutdown',{});appStopped=true;closePicture();discovery.close();showStoppedScreen();}
+        catch(error){showError(error);}
+      });
+      // ---- Stream out: addresses for VLC / OBS (multicast UDP), one per tuner ----
+      const outDialog=document.getElementById('out-dialog'),outRows=document.getElementById('out-rows'),outStatus=document.getElementById('out-status'),outNote=document.getElementById('out-note');
+      let outData=null,outTimer=null,outSignature='';
+      const outViewer=document.getElementById('out-viewer');
+      const outViewerValid=text=>/^(\d{1,3}\.){3}\d{1,3}$/.test(text)&&text.split('.').every(n=>Number(n)<=255);
+      try{outViewer.value=localStorage.getItem('outViewer')||'';}catch{}
+      const outViewerIp=()=>outViewerValid(outViewer.value.trim())?outViewer.value.trim():'';   // for OBS on a Mac or another PC: it must name its own network card
+      outViewer.addEventListener('input',()=>{
+        outViewer.classList.toggle('bad',outViewer.value.trim()!==''&&!outViewerIp());
+        try{localStorage.setItem('outViewer',outViewer.value.trim());}catch{}
+        outRender(false);
+      });
+      async function outCopy(text,button){
+        try{await navigator.clipboard.writeText(text);}
+        catch{const box=document.createElement('textarea');box.value=text;document.body.append(box);box.select();try{document.execCommand('copy');}catch{}box.remove();}
+        button.textContent='Copied';setTimeout(()=>{button.textContent='Copy';},1200);
+      }
+      function outAddress(tag,text){
+        const row=document.createElement('div'),label=document.createElement('span'),code=document.createElement('code'),button=document.createElement('button');
+        row.className='out-addr';label.className='out-tag';label.textContent=tag;code.textContent=text;
+        button.type='button';button.className='out-copy';button.textContent='Copy';button.addEventListener('click',()=>outCopy(text,button));
+        row.append(label,code,button);return row;
+      }
+      function outRender(fillForm){
+        if(!outData)return;
+        document.getElementById('out-enabled').checked=outData.enabled;
+        outStatus.className=outData.sending?'on':'';
+        outStatus.textContent=outData.sending?`Sending from ${outData.interfaceUsed||'default card'}`:outData.enabled?'Not sending: no network card':'Off';
+        const signature=JSON.stringify([outViewerIp(),outData.tuners,outData.sending,state.receivers.map(x=>[x.number,x.parked,x.frequencyMhz,cardElements.get(x.number)?.stationName||''])]);
+        if(!fillForm&&signature===outSignature)return;   // do not rebuild the rows (it would drop a text selection)
+        outSignature=signature;
+        outRows.replaceChildren(...outData.tuners.map(t=>{
+          const receiver=state.receivers.find(r=>r.number===t.number),card=cardElements.get(t.number);
+          const row=document.createElement('div'),number=document.createElement('span'),name=document.createElement('div'),small=document.createElement('small');
+          row.className='out-row';number.className='tuner-number';number.textContent=t.number;number.style.setProperty('--channel',colors[(t.number-1)%colors.length]);
+          name.className='out-name';name.textContent=receiver&&!receiver.parked?(card?.stationName||'Tuner '+t.number):'Parked';
+          small.textContent=receiver&&!receiver.parked&&receiver.frequencyMhz!=null?receiver.frequencyMhz.toFixed(3)+' MHz':'';name.append(small);
+          row.append(number,name,outAddress('VLC',t.vlc),outAddress('OBS',t.obs+(outViewerIp()?'?localaddr='+outViewerIp():'')));return row;
+        }));
+        if(fillForm){
+          document.getElementById('out-group').value=outData.group;document.getElementById('out-port').value=outData.basePort;
+          const card=document.getElementById('out-card');
+          card.replaceChildren(...[{ip:'',name:'Automatic ('+(outData.interfaceUsed||'none found')+')'},...outData.interfaces.map(i=>({ip:i.ip,name:i.ip+' · '+i.name}))].map(i=>{const o=document.createElement('option');o.value=i.ip;o.textContent=i.name;return o;}));
+          card.value=outData.interfaceIp;
+        }
+      }
+      async function outSend(body,fillForm){
+        outNote.textContent='';
+        try{outData=await api('/api/streamout',body);outRender(fillForm);}
+        catch(error){outNote.textContent=error.message;try{outData=await api('/api/streamout');outRender(false);}catch{}}
+      }
+      async function outLoad(fillForm){try{outData=await api('/api/streamout');outRender(fillForm);}catch(error){outNote.textContent=error.message;}}
+      document.getElementById('out-open').addEventListener('click',async()=>{
+        if(outDialog.open)return;
+        outNote.textContent='';await outLoad(true);outDialog.showModal();
+        outTimer=setInterval(()=>outLoad(false),2000);
+      });
+      outDialog.addEventListener('close',()=>{clearInterval(outTimer);outTimer=null;});
+      outDialog.addEventListener('click',event=>{if(event.target===outDialog)outDialog.close();});
+      document.getElementById('out-close').addEventListener('click',()=>outDialog.close());
+      document.getElementById('out-enabled').addEventListener('change',event=>outSend({enabled:event.target.checked},false));
+      document.getElementById('out-apply').addEventListener('click',()=>outSend({group:document.getElementById('out-group').value,basePort:parseInt(document.getElementById('out-port').value,10),interfaceIp:document.getElementById('out-card').value},true));
+
+      // ---- Transport stream info card (/api/ts) ----
+      const tsDialog=document.getElementById('ts-dialog');
+      let tsNumber=null,tsTimer=null;
+      const tsFormat=n=>Number(n).toLocaleString('en-US');
+      const tsHex=pid=>'0x'+pid.toString(16).toUpperCase().padStart(4,'0');
+      function tsCell(row,text,className){const cell=document.createElement('td');cell.textContent=text;if(className)cell.className=className;row.append(cell);return cell;}
+      async function tsRefresh(){
+        if(tsNumber===null)return;
+        const receiver=state.receivers.find(r=>r.number===tsNumber),card=cardElements.get(tsNumber);
+        tsDialog.style.setProperty('--channel',colors[(tsNumber-1)%colors.length]);
+        document.getElementById('ts-num').textContent=tsNumber;
+        document.getElementById('ts-title').textContent=receiver&&!receiver.parked?(card?.stationName||'Tuner '+tsNumber):'Tuner '+tsNumber+' (parked)';
+        let data;
+        try{data=await api('/api/ts?number='+tsNumber);}catch(error){document.getElementById('ts-state').textContent=error.message;return;}
+        if(tsNumber===null)return;
+        const stateText=document.getElementById('ts-state');
+        stateText.textContent=data.running?'● receiving':'no data';stateText.className='ts-state'+(data.running?' live':'');
+        const totals=data.totals,errors=totals.ccErrors+totals.teiErrors+totals.syncLosses;
+        document.getElementById('ts-rate').innerHTML='';document.getElementById('ts-rate').append(data.running?tsFormat(Math.round(totals.kbps)):'–',Object.assign(document.createElement('small'),{textContent:' kbit/s'}));
+        document.getElementById('ts-null').textContent=data.running?totals.nullPercent.toFixed(1)+' %':'–';
+        const cc=document.getElementById('ts-cc');cc.textContent=tsFormat(errors);cc.className=errors>0?'bad':'';
+        document.getElementById('ts-packets').textContent=tsFormat(totals.packets);
+        const service=document.getElementById('ts-service');
+        service.hidden=!data.programs.length;
+        service.replaceChildren(...data.programs.map(program=>{
+          const line=document.createElement('div'),name=document.createElement('b');
+          name.textContent=program.name||'Service '+program.number;
+          const rest=document.createElement('span');
+          rest.textContent=[program.provider,program.serviceType,'program '+program.number,'PMT '+tsHex(program.pmtPid),program.pcrPid>=0?'PCR '+tsHex(program.pcrPid):''].filter(Boolean).join(' · ');
+          line.append(name,document.createTextNode('  '),rest);return line;
+        }));
+        const rows=data.pids.slice().sort((a,b)=>(b.kbps-a.kbps)||(a.pid-b.pid)).map(pid=>{
+          const row=document.createElement('tr'),isNull=pid.pid===0x1FFF;
+          const pidCell=tsCell(row,tsHex(pid.pid),'pid');pidCell.append(Object.assign(document.createElement('small'),{textContent:String(pid.pid)}));
+          const content=tsCell(row,pid.kind+(pid.detail?' · '+pid.detail:''),isNull?'dim':'');
+          if(pid.info){const info=document.createElement('div');info.className='ts-info';info.textContent=pid.info;content.append(info);}
+          tsCell(row,pid.kbps.toFixed(1),'num');
+          const share=document.createElement('td'),bar=document.createElement('span'),fill=document.createElement('i');
+          bar.className='ts-bar'+(isNull?' pad':'');fill.style.width=Math.min(100,pid.percent)+'%';bar.append(fill);
+          share.append(bar,document.createTextNode(pid.percent.toFixed(1)+' %'));row.append(share);
+          tsCell(row,pid.ccErrors+pid.teiErrors>0?tsFormat(pid.ccErrors+pid.teiErrors):'–','num'+(pid.ccErrors+pid.teiErrors>0?' bad':''));
+          return row;
+        });
+        document.getElementById('ts-rows').replaceChildren(...rows);
+      }
+      function openTs(number){
+        tsNumber=number;tsRefresh();
+        if(!tsDialog.open)tsDialog.showModal();
+        clearInterval(tsTimer);tsTimer=setInterval(tsRefresh,1000);
+      }
+      tsDialog.addEventListener('close',()=>{clearInterval(tsTimer);tsTimer=null;tsNumber=null;});
+      tsDialog.addEventListener('click',event=>{if(event.target===tsDialog)tsDialog.close();});
+      document.getElementById('ts-close').addEventListener('click',()=>tsDialog.close());
+
+      // ---- About: opens from the version badge ----
+      const aboutDialog=document.getElementById('about-dialog');
+      for(const id of ['header-version','about-open'])document.getElementById(id).addEventListener('click',()=>{
+        const mark=document.querySelector('.navbar .brand-mark'),holder=document.getElementById('about-mark');
+        if(mark&&!holder.firstChild)holder.append(mark.cloneNode(true));
+        const badge=document.getElementById('header-version');
+        document.getElementById('about-version').textContent=(badge.textContent||'')+(badge.title?' · '+badge.title.toLowerCase():'');
+        if(!aboutDialog.open)aboutDialog.showModal();
+      });
+      aboutDialog.addEventListener('click',event=>{if(event.target===aboutDialog)aboutDialog.close();});
+      document.getElementById('about-close').addEventListener('click',()=>aboutDialog.close());
+
+      // ---- Settings: the LNB oscillator frequency ----
+      const settingsDialog=document.getElementById('settings-dialog'),lnbInput=document.getElementById('lnb-input'),lnbPreview=document.getElementById('lnb-preview'),lnbNote=document.getElementById('lnb-note'),lnbApply=document.getElementById('lnb-apply');
+      let settingsData=null,calRunning=false,calTimer=null;
+      const lnbText=n=>Number(n.toFixed(3)).toString();
+      // the same rules as in the program: the tuner must be able to receive the whole band
+      function lnbProblem(mhz){
+        const d=settingsData;
+        if(!d||!isFinite(mhz))return 'Enter the LNB frequency in MHz, for example 9750.';
+        if(mhz>=d.bandLowMhz)return 'The LNB frequency must be below the band ('+lnbText(d.bandLowMhz)+' MHz). Values like 10600 are for the upper band of a universal LNB; use the lower one, for example 9750.';
+        const low=d.bandLowMhz-mhz,high=d.bandHighMhz-mhz;
+        if(low<d.tunerMinMhz-1e-9||high>d.tunerMaxMhz+1e-9)return 'With '+lnbText(mhz)+' MHz the tuner would have to receive '+lnbText(low)+' to '+lnbText(high)+' MHz, but it can only receive '+lnbText(d.tunerMinMhz)+' to '+lnbText(d.tunerMaxMhz)+' MHz. Check the value printed on your LNB.';
+        return null;
+      }
+      function lnbShow(){
+        const mhz=parseFloat(lnbInput.value),problem=lnbProblem(mhz);
+        lnbInput.classList.toggle('bad',!!problem&&lnbInput.value!=='');
+        lnbApply.disabled=!!problem||calRunning;
+        lnbPreview.classList.toggle('bad',!!problem);
+        if(problem){lnbPreview.textContent=lnbInput.value===''?'':problem;return;}
+        lnbPreview.replaceChildren(document.createTextNode('The tuner will receive '),Object.assign(document.createElement('b'),{textContent:lnbText(settingsData.bandLowMhz-mhz)+' to '+lnbText(settingsData.bandHighMhz-mhz)+' MHz'}),document.createTextNode(' (the beacon at '+lnbText(10491.5-mhz)+' MHz).'));
+      }
+      lnbInput.addEventListener('input',()=>{lnbNote.textContent='';lnbNote.className='set-note';lnbShow();});
+      lnbInput.addEventListener('keydown',event=>{if(event.key==='Enter'&&!lnbApply.disabled)lnbApply.click();});
+      document.getElementById('settings-open').addEventListener('click',async()=>{
+        lnbNote.textContent='';lnbNote.className='set-note';
+        try{settingsData=await api('/api/settings');}catch(error){lnbNote.textContent=error.message;lnbNote.className='set-note bad';return;}
+        lnbInput.value=lnbText(settingsData.lnbMhz);lnbShow();updCheck.checked=settingsData.checkUpdates!==false;
+        if(!settingsDialog.open)settingsDialog.showModal();
+        calLoad();clearInterval(calTimer);calTimer=setInterval(calLoad,1000);
+        lnbInput.select();
+      });
+      lnbApply.addEventListener('click',async()=>{
+        lnbApply.disabled=true;lnbNote.className='set-note';lnbNote.textContent='Applying…';
+        try{
+          settingsData=await api('/api/settings',{lnbMhz:parseFloat(lnbInput.value)});
+          lnbNote.textContent='Saved. All tuners were retuned with the new LNB frequency.';
+          try{await refresh();}catch{}
+        }catch(error){lnbNote.textContent=error.message;lnbNote.className='set-note bad';}
+        lnbShow();
+      });
+      // ---- Calibration (the beacon is the known frequency) ----
+      const calRows=document.getElementById('cal-rows'),calNote=document.getElementById('cal-note'),calStart=document.getElementById('cal-start'),calCancel=document.getElementById('cal-cancel'),calReset=document.getElementById('cal-reset');
+      function calStatus(t,rounds){
+        const of=' ('+t.round+' of '+rounds+')';
+        switch(t.status){
+          case 'away':return ['Tuning away…'+of,'busy'];
+          case 'locking':return ['Locking on the beacon…'+of+(t.message?' · '+t.message:''),'busy'];
+          case 'measuring':return ['Measuring…'+of+(t.measuredKhz!==null?' · so far '+t.measuredKhz+' kHz':''),'busy'];
+          case 'done':return ['Saved. The tuner was '+t.measuredKhz+' kHz off.','ok'];
+          case 'failed':return [t.message||'Failed.','bad'];
+          case 'cancelled':return ['Cancelled.',''];
+          default:return ['Waiting…',''];
+        }
+      }
+      function calRender(data){
+        const cal=data.calibration;
+        calRunning=cal.running;
+        calStart.disabled=cal.running||!data.started;calReset.disabled=cal.running;calCancel.hidden=!cal.running;
+        lnbShow();
+        calNote.className='set-note';
+        calNote.textContent=!data.started?'Press Start receiving first.':'';
+        calRows.replaceChildren(...data.saved.map(item=>{
+          const row=document.createElement('div'),number=document.createElement('span'),mid=document.createElement('div'),value=document.createElement('div');
+          row.className='cal-row';number.className='tuner-number';number.textContent=item.number;number.style.setProperty('--channel',colors[(item.number-1)%colors.length]);
+          const progress=cal.tuners.find(t=>t.number===item.number);
+          mid.className='cal-state';
+          if(progress){const [text,kind]=calStatus(progress,cal.rounds);mid.textContent=text;mid.classList.add(...(kind?[kind]:[]));}
+          else mid.textContent=item.at?'Calibrated':'Not calibrated yet';
+          value.className='cal-value';
+          const khz=progress&&progress.correctionKhz!==undefined?progress.correctionKhz:item.correctionKhz;
+          value.textContent=(khz>0?'+':khz<0?'−':'')+Math.abs(khz).toFixed(1)+' kHz';
+          const small=document.createElement('small');small.textContent=item.at?new Date(item.at).toLocaleString([],{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'correction';value.append(small);
+          row.append(number,mid,value);return row;
+        }));
+      }
+      async function calLoad(){try{calRender(await api('/api/calibration'));}catch(error){calNote.textContent=error.message;calNote.className='set-note bad';}}
+      calStart.addEventListener('click',async()=>{try{calRender(await api('/api/calibration/start',{}));}catch(error){calNote.textContent=error.message;calNote.className='set-note bad';}});
+      calCancel.addEventListener('click',async()=>{try{calRender(await api('/api/calibration/cancel',{}));}catch(error){calNote.textContent=error.message;calNote.className='set-note bad';}});
+      calReset.addEventListener('click',async()=>{
+        if(!confirm('Remove the frequency corrections of all tuners?'))return;
+        try{calRender(await api('/api/calibration/reset',{}));}catch(error){calNote.textContent=error.message;calNote.className='set-note bad';}
+      });
+      settingsDialog.addEventListener('click',event=>{if(event.target===settingsDialog)settingsDialog.close();});
+      settingsDialog.addEventListener('close',()=>{clearInterval(calTimer);calTimer=null;});
+      document.getElementById('settings-close').addEventListener('click',()=>settingsDialog.close());
+
+      async function connectSpectrum() {
+        try {
+          socket = new WebSocket('wss://eshail.batc.org.uk/wb/fft','fft');
+          socket.binaryType='arraybuffer';
+          socket.onmessage=event=>{spectrumUpdated=Date.now();const data=new DataView(event.data);spectrum=Array.from({length:Math.floor(data.byteLength/2)},(_,index)=>data.getUint16(index*2,true));draw();};
+          socket.onclose=()=>setTimeout(connectSpectrum,2000);
+          socket.onerror=()=>socket.close();
+        } catch (_) { setTimeout(connectSpectrum,5000); }
+      }
+      connectSpectrum();
+      refresh().catch(showError);
+      setInterval(()=>refresh().catch(showError),1500);
+    })();
+  </script>
+  <script>
+  // BATC wideband chat (/api/chat). Self-contained: its own closure, and any failure only affects the chat panel.
+  (()=>{try{
+    const panel=document.querySelector('#chat-panel'),btn=document.querySelector('#chat-open'),badge=document.querySelector('#chat-badge'),list=document.querySelector('#chat-messages'),status=document.querySelector('#chat-status'),who=document.querySelector('#chat-who'),whoList=document.querySelector('#chat-who-list'),callBox=document.querySelector('#chat-call'),nameBox=document.querySelector('#chat-name'),asLine=document.querySelector('#chat-as'),input=document.querySelector('#chat-input'),send=document.querySelector('#chat-send'),note=document.querySelector('#chat-note'),head=document.querySelector('#chat-head');
+    const keep=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k)||'';localStorage.setItem(k,v);}catch(e){}return '';};
+    let started=false,last=0,generation=-1,unread=0,busy=false,online=false,tick=0;
+    const isOpen=()=>panel.classList.contains('open'),me=()=>(callBox.value.trim().toUpperCase()+' '+nameBox.value.trim()).trim();
+    callBox.value=keep('chatCall');nameBox.value=keep('chatName');
+    function identity(){callBox.value=callBox.value.replace(/[^A-Za-z0-9\/]/g,'');keep('chatCall',callBox.value);keep('chatName',nameBox.value);
+      asLine.textContent=callBox.value?'You appear as: '+me():'Enter your callsign to write in the chat.';input.disabled=send.disabled=!online||!callBox.value;
+      input.placeholder=!callBox.value?'Enter your callsign first':online?'Message':'Not connected';}
+    callBox.oninput=nameBox.oninput=identity;
+    function clock(iso){const d=new Date(iso);return isNaN(d)?'':d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+    function line(m){const row=document.createElement('div'),t=document.createElement('span'),n=document.createElement('span'),x=document.createElement('span');row.className='cmsg'+(me()&&m.name===me()?' mine':'');
+      t.className='cmsg-time';t.textContent=clock(m.time);n.className='cmsg-name';n.textContent=m.name;x.textContent=m.message;row.append(t,n,x);list.append(row);}
+    function names(nicks){const seen=[...new Set(nicks.map(s=>s.trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));who.hidden=!online;who.textContent=seen.length+' in chat '+(whoList.classList.contains('open')?'▴':'▾');
+      whoList.replaceChildren(...seen.map(s=>{const e=document.createElement('span');e.textContent=s;if(s===me())e.style.color='#89c7a4';return e;}));}
+    async function pollChat(){if(busy)return;busy=true;
+      try{const response=await fetch('/api/chat?since='+last+'&generation='+generation,{cache:'no-store'});if(!response.ok)throw Error();const d=await response.json();
+        const atEnd=d.reset||list.scrollHeight-list.scrollTop-list.clientHeight<40;if(d.reset){list.replaceChildren();last=0;}
+        for(const m of d.messages){line(m);last=m.n;if(!d.reset&&!isOpen())unread++;}generation=d.generation;online=d.connected;
+        status.textContent=d.connected?(d.viewers==null?'connected':d.viewers+' watching'):(d.error||'connecting…');names(d.nicks);
+        if(atEnd)list.scrollTop=list.scrollHeight;badge.hidden=!unread;badge.textContent=unread>99?'99+':unread;}
+      catch(e){online=false;status.textContent='Receiver app not reachable';}
+      busy=false;identity();}
+    function show(on){panel.classList.toggle('open',on);btn.setAttribute('aria-expanded',String(on));if(!on)return;started=true;unread=0;badge.hidden=true;pollChat();list.scrollTop=list.scrollHeight;(callBox.value?input:callBox).focus();}
+    btn.onclick=()=>show(!isOpen());document.querySelector('#chat-close').onclick=()=>show(false);
+    who.onclick=()=>{whoList.classList.toggle('open');pollChat();};
+    document.querySelector('#chat-form').onsubmit=async e=>{e.preventDefault();const text=input.value.trim();if(!text||!callBox.value)return;
+      try{await api('/api/chat/send',{callsign:callBox.value,name:nameBox.value.trim(),text});input.value='';note.textContent='';setTimeout(pollChat,500);}catch(err){note.textContent=err.message;}};
+    setInterval(()=>{tick++;if(started&&!document.hidden&&(isOpen()||tick%3===0))pollChat();},2000);
+    // movable by its title bar (position remembered in this browser)
+    function place(left,top){panel.style.right='auto';panel.style.left=Math.max(0,Math.min(innerWidth-80,left))+'px';panel.style.top=Math.max(0,Math.min(innerHeight-40,top))+'px';}
+    try{const p=JSON.parse(keep('chatPos')||'null');if(p&&isFinite(p.l)&&isFinite(p.t))place(p.l,p.t);}catch(e){}
+    head.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;const box=panel.getBoundingClientRect(),dx=e.clientX-box.left,dy=e.clientY-box.top;head.setPointerCapture(e.pointerId);
+      const move=ev=>place(ev.clientX-dx,ev.clientY-dy),stop=()=>{head.removeEventListener('pointermove',move);head.removeEventListener('pointerup',stop);keep('chatPos',JSON.stringify({l:parseInt(panel.style.left),t:parseInt(panel.style.top)}));};
+      head.addEventListener('pointermove',move);head.addEventListener('pointerup',stop);});
+    identity();
+  }catch(error){console.error('Chat panel unavailable',error);}})();
+  </script>
+</body>
+</html>

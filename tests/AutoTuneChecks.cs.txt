@@ -1,0 +1,48 @@
+public static class AutoTuneChecks {
+ static void Check(bool condition,string message){if(!condition)throw new Exception(message);}
+ public static void Run(){
+  var now=new DateTime(2026,1,1);var policy=new QocastPlayer.Receiver.AutoTunePolicy();
+  var one=new QocastPlayer.Receiver.TunerSlot{Number=1,Connected=true};one.Assign(10491.5,1500,now);one.Locked=true;
+  var two=new QocastPlayer.Receiver.TunerSlot{Number=2,Connected=true};var three=new QocastPlayer.Receiver.TunerSlot{Number=3,Connected=true};
+  var slots=new List<QocastPlayer.Receiver.TunerSlot>{one,two,three};
+  var carrier=new QocastPlayer.Receiver.ScanCarrier{FrequencyMhz=10494,SymbolRateKsps=333,Strength=20000};
+  var found=new List<QocastPlayer.Receiver.ScanCarrier>{carrier};
+  Check(policy.Tick(slots,found,true,true,true,true,now).Count==0,"First sighting tuned");
+  Check(policy.Tick(slots,found,true,true,true,true,now.AddSeconds(1)).Count==0,"Second sighting tuned");
+  Check(policy.Tick(slots,found,true,true,true,true,now.AddSeconds(2)).Count==1 && !two.Parked && three.Parked,"Stable assignment or duplicate failed");
+  policy.Tick(slots,found,true,true,true,true,now.AddSeconds(11));Check(!two.Parked,"Acquisition timeout too early");
+  policy.Tick(slots,found,true,true,true,true,now.AddSeconds(12));Check(two.Parked&&three.Parked,"10-second failure not parked or immediate retry");
+  policy.Tick(slots,found,true,true,true,true,now.AddSeconds(28));Check(!two.Parked,"Retry cooldown did not expire");
+  two.Locked=true;policy.Tick(slots,found,true,true,true,false,now.AddSeconds(29));Check(two.HadLock,"Lock not recorded");
+  two.Locked=false;policy.Tick(slots,new List<QocastPlayer.Receiver.ScanCarrier>(),true,true,true,false,now.AddSeconds(30));
+  policy.Tick(slots,new List<QocastPlayer.Receiver.ScanCarrier>(),true,true,true,false,now.AddSeconds(34));Check(!two.Parked,"Loss parked too early");
+  policy.Tick(slots,new List<QocastPlayer.Receiver.ScanCarrier>(),true,true,true,false,now.AddSeconds(35));Check(two.Parked,"5-second loss failed");
+  policy.Tick(slots,found,true,true,true,false,now.AddSeconds(60));Check(two.Parked,"Auto off assigned station");
+  one.Assign(10496,500,now.AddSeconds(70));one.Locked=true;
+  policy.Tick(slots,found,true,true,true,false,now.AddSeconds(71));Check(one.Frequency==10496,"Moved tuner one overridden");
+  one.Locked=false;policy.Tick(slots,new List<QocastPlayer.Receiver.ScanCarrier>(),true,true,true,false,now.AddSeconds(72));
+  policy.Tick(slots,new List<QocastPlayer.Receiver.ScanCarrier>(),true,true,true,false,now.AddSeconds(77));Check(one.Frequency==10491.5,"Beacon fallback failed");
+  policy.Tick(slots,found,false,false,true,true,now.AddSeconds(100));Check(two.Parked,"Stale feed assigned station");
+  ushort[] frame=new ushort[1801];for(int i=0;i<frame.Length;i++){double f=10490.5+i*.005;frame[i]=(ushort)(9000+i*2+(Math.Abs(f-10491.5)<.8?25000:0)+(Math.Abs(f-10494)<.25?22000:0));}
+  bool beacon;var detected=QocastPlayer.Receiver.BatcMonitor.Detect(frame,out beacon);Check(beacon&&detected.Count==1&&Math.Abs(detected[0].FrequencyMhz-10494)<.02,"Carrier detector failed");
+   // Beacon only on a spare tuner; a station takes the beacon tuner when none is parked.
+  {
+   var pol=new QocastPlayer.Receiver.AutoTunePolicy();var t0=new DateTime(2026,2,1);
+   var a=new QocastPlayer.Receiver.TunerSlot{Number=1,Connected=true};var b=new QocastPlayer.Receiver.TunerSlot{Number=2,Connected=true};
+   var s2=new List<QocastPlayer.Receiver.TunerSlot>{a,b};var none=new List<QocastPlayer.Receiver.ScanCarrier>();
+   var c1=new QocastPlayer.Receiver.ScanCarrier{FrequencyMhz=10494,SymbolRateKsps=333,Strength=20000};
+   var c2=new QocastPlayer.Receiver.ScanCarrier{FrequencyMhz=10496,SymbolRateKsps=333,Strength=20000};
+   pol.Tick(s2,none,true,true,true,false,t0);pol.Tick(s2,none,true,true,true,false,t0.AddSeconds(5));
+   Check(a.OnBeacon&&b.Parked,"Beacon not shown on a free tuner (auto off)");
+   var one1=new List<QocastPlayer.Receiver.ScanCarrier>{c1};
+   for(int i=0;i<3;i++)pol.Tick(s2,one1,true,true,true,true,t0.AddSeconds(10+i));
+   Check(a.OnBeacon&&!b.Parked&&b.Frequency==10494,"Station should use the parked tuner first");
+   var two1=new List<QocastPlayer.Receiver.ScanCarrier>{c1,c2};
+   for(int i=0;i<3;i++)pol.Tick(s2,two1,true,true,true,true,t0.AddSeconds(14+i));
+   Check(!a.OnBeacon&&a.Frequency==10496&&b.Frequency==10494,"Beacon did not yield to a station");
+   a.Locked=true;b.Locked=true;pol.Tick(s2,two1,true,true,true,true,t0.AddSeconds(30));pol.Tick(s2,two1,true,true,true,true,t0.AddSeconds(40));
+   Check(!a.OnBeacon&&!b.OnBeacon,"Beacon shown although all tuners carry stations");
+  }
+ Console.WriteLine("PASS: stable candidates, duplicate prevention, 10s acquisition, retry cooldown, 5s loss, AutoTune off, movable tuner 1, beacon fallback, stale-feed hold, real detector");
+ }
+}

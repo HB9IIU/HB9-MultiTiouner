@@ -1,0 +1,24 @@
+# build output and local package caches
+bin/
+obj/
+.vs/
+.packages/
+dist/
+*.user
+
+# things the program creates while it runs
+*.log
+runtime/
+Recordings/
+autotune.json
+settings.json
+streamout.json
+tuner-numbers.json
+player.json
+
+# the big third-party programs go into the release zip only (see NOTICE.md)
+tools/ffmpeg/ffmpeg.exe
+tools/mediamtx/mediamtx.exe
+
+# personal notes
+ZZ_START.txt

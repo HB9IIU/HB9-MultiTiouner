@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    HB9-MultiTiouner multi-device MiniTiouner proof, based on the copied QOCAST Player receiver.
+    All project sources, local NuGet packages, and FTDI wrapper files are kept in this folder.
+  -->
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>HB9-MultiTiouner</AssemblyName>
+    <RootNamespace>HB9MultiTiouner</RootNamespace>
+    <!-- version shown in the page footer; raise the middle number for a feature, the last one for a fix -->
+    <Version>0.1.0</Version>
+    <ApplicationIcon>qocast.ico</ApplicationIcon>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+    <!-- MiniTiouner USB (FTDI D2XX driver wrapper) -->
+    <Reference Include="FTD2XX_NET">
+      <HintPath>lib\FTD2XX_NET.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Serilog" Version="3.1.2-dev-02097" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <!-- PicoTuner USB -->
+    <PackageReference Include="LibUsbDotNet" Version="2.2.29" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="player.example.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="LICENSE" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Web\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tools\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

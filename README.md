@@ -90,6 +90,8 @@ The video of each tuner goes through FFmpeg and MediaMTX, which are not stored i
 
 ## Credits and licence
 
+Thank you to Michel, HB9DUG, whose encouragement got me started on this version.
+
 HB9 MultiTiouner is free software under the **GNU General Public License v3.0** (see [LICENSE](LICENSE)).
 
 The tuner code comes from [Open Tuner](https://github.com/tomvdb/open_tuner) by Tom ZR6TG and contributors, through the QOCAST Player. Thanks also to BATC for the wideband spectrum feed and chat, and to the authors of FFmpeg and MediaMTX. All third-party parts are listed in [NOTICE.md](NOTICE.md).

@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
 
 - PicoTuner support (experimental): both tuners of a PicoTuner, and several PicoTuners at once. Tested with PicoTuner emulators only, not yet with real hardware.
 - The page can show the QO-100 band plan as faint bars under the spectrum (switch "Band plan", on by default).

@@ -12,7 +12,7 @@
     <AssemblyName>HB9-MultiTiouner</AssemblyName>
     <RootNamespace>HB9MultiTiouner</RootNamespace>
     <!-- version shown in the page footer; raise the middle number for a feature, the last one for a fix -->
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <ApplicationIcon>qocast.ico</ApplicationIcon>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Nullable>disable</Nullable>

@@ -741,6 +741,13 @@ namespace opentuner
             ts2EndPointReader?.Dispose();
             i2c_pt_device?.Close();
             ts_pt_device?.Close();
+            // forget the closed handles, or a later hw_init (tuner plugged in again) would take them for open ones
+            i2c_pt_device = null;
+            ts_pt_device = null;
+            i2cEndPointWriter = null;
+            i2cEndPointReader = null;
+            ts1EndPointReader = null;
+            ts2EndPointReader = null;
             // Free usb resources.
             // This is necessary for libusb-1.0 and Linux compatibility.
             UsbDevice.Exit();

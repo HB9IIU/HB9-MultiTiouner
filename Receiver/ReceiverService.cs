@@ -28,6 +28,7 @@ namespace QocastPlayer.Receiver
 
         private readonly PlayerConfig _config;
         private readonly string _deviceSerial;
+        private readonly bool _picoTuner;
         private readonly object _lock = new object();
         private readonly ManualResetEvent _stopEvent = new ManualResetEvent(false);
         private Thread _supervisor;
@@ -54,10 +55,11 @@ namespace QocastPlayer.Receiver
         // raised on a worker thread
         public event Action<ReceiverState> StateChanged;
 
-        public ReceiverService(PlayerConfig config, string deviceSerial = null)
+        public ReceiverService(PlayerConfig config, string deviceSerial = null, bool picoTuner = false)
         {
             _config = config;
             _deviceSerial = deviceSerial;
+            _picoTuner = picoTuner;
             _parser = new TSParserThread(OnService);
         }
 
@@ -277,7 +279,7 @@ namespace QocastPlayer.Receiver
                 Attempt[] attempts;
                 if (owner._deviceSerial != null)
                 {
-                    attempts = new[] { Attempt.MiniTiouner };
+                    attempts = new[] { owner._picoTuner ? Attempt.PicoTuner : Attempt.MiniTiouner };
                 }
                 else switch (owner._config.receiver_type)
                 {

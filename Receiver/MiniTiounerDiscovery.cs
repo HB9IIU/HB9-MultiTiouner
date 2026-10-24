@@ -8,14 +8,16 @@ namespace QocastPlayer.Receiver
 {
     public sealed class MiniTiounerDevice
     {
-        public MiniTiounerDevice(string serial, string name)
+        public MiniTiounerDevice(string serial, string name, bool isPicoTuner = false)
         {
             Serial = serial;
             Name = name;
+            IsPicoTuner = isPicoTuner;
         }
 
         public string Serial { get; }
         public string Name { get; }
+        public bool IsPicoTuner { get; }
         public string UsbDescription { get; set; }
         public string DriverVersion { get; set; }
     }

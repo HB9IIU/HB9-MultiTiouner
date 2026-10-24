@@ -75,30 +75,42 @@ namespace QocastPlayer
             // the LNB frequency: settings.json (changed in the web page) wins over player.json
             AppSettings.Initialize(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json"), config.lnb_offset_khz);
 
-            MiniTiounerDevice[] devices;
+            var found = new List<MiniTiounerDevice>();
+            Exception ftdiProblem = null;
             try
             {
-                devices = MiniTiounerDiscovery.Discover().ToArray();
+                found.AddRange(MiniTiounerDiscovery.Discover());
             }
             catch (Exception ex)
             {
+                // e.g. no FTDI driver installed: fine if a PicoTuner is there, reported below if nothing is
                 Log.Error(ex, "MiniTiouner discovery failed");
-                MessageBox.Show(ex.Message, "HB9-MultiTiouner - tuner discovery",
+                ftdiProblem = ex;
+            }
+
+            MiniTiounerDevice pico = PicoTunerDiscovery.Discover();
+            if (pico != null)
+                found.Add(pico);
+            MiniTiounerDevice[] devices = found.ToArray();
+
+            if (devices.Length == 0 && ftdiProblem != null)
+            {
+                MessageBox.Show(ftdiProblem.Message, "HB9-MultiTiouner - tuner discovery",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return 1;
             }
 
             if (devices.Length == 0)
             {
-                const string message = "No usable MiniTiouner was found. Connect a MiniTiouner and check its FTDI driver.";
+                const string message = "No usable MiniTiouner or PicoTuner was found. Connect a tuner and check its driver.";
                 Log.Warning(message);
                 if (args.Contains("--list-devices"))
                     return 2;
-                MessageBox.Show("No usable MiniTiouner was found." + Environment.NewLine + Environment.NewLine + "1. Connect a MiniTiouner by USB." + Environment.NewLine + "2. Install the FTDI D2XX driver." + Environment.NewLine + "3. Close any other program that uses the tuner (OpenTuner, the MiniTiouner app)." + Environment.NewLine + Environment.NewLine + "Only MiniTiouner devices are supported.", "HB9-MultiTiouner", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("No usable MiniTiouner or PicoTuner was found." + Environment.NewLine + Environment.NewLine + "1. Connect a MiniTiouner or a PicoTuner by USB." + Environment.NewLine + "2. MiniTiouner: install the FTDI D2XX driver. PicoTuner: bind its two USB interfaces to the WinUSB driver (Zadig)." + Environment.NewLine + "3. Close any other program that uses the tuner (OpenTuner, the MiniTiouner app).", "HB9-MultiTiouner", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return 1;
             }
 
-            Log.Information("Found {Count} MiniTiouner devices", devices.Length);
+            Log.Information("Found {Count} tuner devices", devices.Length);
             foreach (MiniTiounerDevice device in devices)
                 Log.Information("Tuner: {Name}, serial {Serial}", device.Name, device.Serial);
             if (args.Contains("--list-devices"))
@@ -134,7 +146,7 @@ namespace QocastPlayer
             {
                 foreach (MiniTiounerDevice device in devices)
                 {
-                    var receiver = new ReceiverService(config, device.Serial);
+                    var receiver = new ReceiverService(config, device.Serial, device.IsPicoTuner);
                     receivers.Add(receiver);
                     receiver.Start();
                 }

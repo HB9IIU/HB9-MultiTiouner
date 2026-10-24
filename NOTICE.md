@@ -17,6 +17,10 @@ These are separate programs. They are not part of the source code in this reposi
   On request I will also send the source code and the build settings free of charge.
 - **MediaMTX** v1.21.2, https://github.com/bluenviron/mediamtx, MIT licence (`tools\mediamtx\LICENSE.txt`).
 
+## Native library (file `libusb-1.0.dll`, for the PicoTuner)
+
+- **libusb** 1.0.27 (x64), https://libusb.info, GNU LGPL v2.1 or later (the same licence text as `tools\ffmpeg\COPYING.LGPLv2.1.txt`). Copied unchanged from the Open Tuner release. The source code is at https://github.com/libusb/libusb .
+
 ## Web page
 
 - **Bootstrap** CSS, MIT licence (`Web\BOOTSTRAP-LICENSE.txt`).

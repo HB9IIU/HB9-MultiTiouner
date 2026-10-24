@@ -1,12 +1,23 @@
 # HB9 MultiTiouner
 
-**Receive QO-100 DATV with several MiniTiouners at once, in your web browser.**
+**Receive QO-100 DATV with several MiniTiouners (and, experimentally, PicoTuners) at once, in your web browser.**
 
 ![HB9 MultiTiouner](docs/images/main.png)
 
-> ### PicoTuner support is in preparation
-> Today **only MiniTiouner devices are supported**.
-> I am waiting for kind people to send me PicoTuner hardware for testing. If you can help, please open an issue on GitHub or write to me at the e-mail address on my [QRZ.com page](https://www.qrz.com/db/HB9IIU).
+> ### PicoTuner support: NOT tested on real hardware
+> | | Status |
+> |---|---|
+> | **MiniTiouner** (MiniTiouner, Express, Pro) | Supported, tested with real hardware |
+> | **PicoTuner** | **Experimental. Never tested with a real PicoTuner.** |
+>
+> HB9 MultiTiouner can also use PicoTuners: both tuners of each one, and several PicoTuners at the same time. **It should normally work, but I cannot promise it.** I do not have a PicoTuner and I do not know anybody who could test it for me, so I could only try it with **emulators** (Raspberry Pi Pico boards that pretend to be a PicoTuner).
+>
+> - **Tested with the emulators:** finding the PicoTuner, tuning, lock, video, both tuners at the same time, two PicoTuners at the same time, unplugging and plugging in again.
+> - **Not tested, because an emulator cannot show it:** reception of a real signal, LNB power and the 22 kHz tone, how a real PicoTuner behaves on USB at full data rate, and anything specific to a particular PicoTuner version.
+>
+> **If you own a PicoTuner, please try it and tell me how it went, good or bad. Your feedback is very welcome and it is the only way I can make this work properly.** Please open an issue on GitHub or write to me at the e-mail address on my [QRZ.com page](https://www.qrz.com/db/HB9IIU). The file `HB9-MultiTiouner.log` next to the program helps a lot, please attach it.
+>
+> To use a PicoTuner, its two USB interfaces ("PicoTuner i2c" and "PicoTuner TS") must be bound to the WinUSB driver (for example with Zadig). Only one program can use a PicoTuner at a time, so close OpenTuner first.
 
 ## Why this exists
 
@@ -16,7 +27,7 @@ It is made by an amateur for amateurs, as a hobby. It is **free of charge and no
 
 ## What it does
 
-- Finds every connected MiniTiouner and numbers them. The numbers are remembered by USB serial number.
+- Finds every connected MiniTiouner (and, experimentally, PicoTuner) and numbers them. The numbers are remembered by USB serial number. A PicoTuner has none, so it is remembered by the USB port it is plugged into.
 - Shows the QO-100 wideband spectrum (the BATC feed) with a marker for each tuner.
 - **LNB setting:** for LNBs that are not 9750 MHz, type your LNB frequency in the **Settings** window. It is applied at once and remembered.
 - **Calibration:** every LNB and tuner has a small frequency error. One button measures it on the beacon, separately for each tuner, and corrects it.
@@ -34,15 +45,15 @@ It is made by an amateur for amateurs, as a hobby. It is **free of charge and no
 ## What you need
 
 - Windows 10 or 11, 64 bit
-- one or more **MiniTiouner** (MiniTiouner, Express or Pro)
-- the **FTDI D2XX driver** (the one your MiniTiouner needs anyway)
+- one or more **MiniTiouner** (MiniTiouner, Express or Pro), or a **PicoTuner** (experimental, see the note at the top)
+- the **FTDI D2XX driver** (the one your MiniTiouner needs anyway). A PicoTuner needs the WinUSB driver instead (see the note at the top)
 - a modern browser (Edge, Chrome, Firefox)
 - an internet connection, for the BATC spectrum and chat
 
 ## Quick start
 
 1. Download the zip from the [Releases](../../releases) page and unzip it anywhere. It is portable: everything stays in that one folder.
-2. Connect your MiniTiouner(s) and close any other program that uses them (OpenTuner, the MiniTiouner app).
+2. Connect your MiniTiouner(s) or PicoTuner(s) and close any other program that uses them (OpenTuner, the MiniTiouner app).
 3. Start `HB9-MultiTiouner.exe`. Your browser opens at `http://127.0.0.1:47322`.
 4. Check the list of detected tuners. It starts by itself after three seconds, or press **Start receiving**.
 

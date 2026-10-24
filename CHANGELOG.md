@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- PicoTuner support (experimental): both tuners of a PicoTuner, and several PicoTuners at once. Tested with PicoTuner emulators only, not yet with real hardware.
+- The page can show the QO-100 band plan as faint bars under the spectrum (switch "Band plan", on by default).
+- The header says "N of M tuners connected", with how many MiniTiouners and PicoTuners.
+
 ## 0.1.0 (first release)
 
 First public version of HB9 MultiTiouner.

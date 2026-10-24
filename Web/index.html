@@ -138,7 +138,7 @@
     </section>
 
     <section id="receiver-panel" class="panel">
-    <div class="receiver-section-heading"><span class="section-kicker">Receiver bank</span><h2>MiniTiouner Receivers</h2></div>
+    <div class="receiver-section-heading"><span class="section-kicker">Receiver bank</span><h2>Receivers</h2></div>
     <section id="receivers" class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3" aria-live="polite"></section>
     </section>
     <footer class="page-signature"><span>HB9 MultiTiouner <span id="app-version"></span></span><span class="signature-middle">by HB9IIU · Free software · GPL-3.0</span><span>Satellite television · QO-100</span></footer>
@@ -163,7 +163,7 @@
     <table class="ts-table"><thead><tr><th>PID</th><th>Content</th><th class="num">kbit/s</th><th>Share</th><th class="num">Errors</th></tr></thead><tbody id="ts-rows"></tbody></table>
     <p class="ts-note">Live view of the received MPEG transport stream, updated every second. Continuity errors mean lost or damaged packets; the counters start again when the tuner retunes. Padding is empty "null" packets that fill the fixed rate.</p></dialog>
   <dialog id="about-dialog" class="info-dialog" aria-labelledby="about-title"><div class="info-header"><div class="tuner-identity"><div class="heading-name"><strong id="about-title">About</strong><span id="about-version" class="section-kicker"></span></div></div><button id="about-close" type="button" class="info-close" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <div class="about-top"><div id="about-mark"></div><div><strong><span class="brand-prefix">HB9</span> MultiTiouner</strong><span>Several MiniTiouners at once, in your browser. By HB9IIU.</span><span>Free software · GNU General Public License v3.0 · MiniTiouner devices only</span><span id="about-update" class="about-update" hidden></span></div></div>
+    <div class="about-top"><div id="about-mark"></div><div><strong><span class="brand-prefix">HB9</span> MultiTiouner</strong><span>Several MiniTiouners at once, in your browser. By HB9IIU.</span><span>Free software · GNU General Public License v3.0 · MiniTiouner and PicoTuner (experimental)</span><span id="about-update" class="about-update" hidden></span></div></div>
     <div class="about-section"><h3>How to use</h3><ul>
       <li><b>Start receiving</b> connects the tuners. The beacon goes on tuner 1 whenever a tuner is spare.</li>
       <li><b>Click a signal</b> in the spectrum, or drag a numbered marker, to tune a tuner.</li>
@@ -431,7 +431,7 @@
         try { if(sessionStorage.getItem(key))return; } catch {}
         if(state.started)return;
         const count=state.receivers.length;
-        document.getElementById('discovery-description').textContent=`${count} MiniTiouner${count===1?'':'s'} detected.`;
+        document.getElementById('discovery-description').textContent=`${count} tuner${count===1?'':'s'} detected.`;
         document.getElementById('discovery-devices').replaceChildren(...state.receivers.map(receiver=>{
           const row=document.createElement('div');
           row.className='discovery-device';
@@ -656,7 +656,7 @@
         }
         if(!locked){
           card.lockSince=0;
-          card.videoMessage.textContent=card.signalLost?'Signal lost · waiting for transmission':!state.started?'Reception not started':receiver.state==='Disconnected'?'MiniTiouner disconnected':card.hadLock?'Signal interrupted…':'Waiting for a locked signal…';
+          card.videoMessage.textContent=card.signalLost?'Signal lost · waiting for transmission':!state.started?'Reception not started':receiver.state==='Disconnected'?'Tuner disconnected':card.hadLock?'Signal interrupted…':'Waiting for a locked signal…';
           return;
         }
         if(!card.lockSince)card.lockSince=now;

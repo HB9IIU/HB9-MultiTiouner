@@ -56,7 +56,7 @@ namespace QocastPlayer
                     return new ReceiverNode(
                         number,
                         device,
-                        new ReceiverService(config, device.Serial, device.IsPicoTuner),
+                        new ReceiverService(config, device.Serial, device.PicoTuner),
                         StartFrequencies[tuneIndex],
                         StartSymbolRates[tuneIndex]);
                 })

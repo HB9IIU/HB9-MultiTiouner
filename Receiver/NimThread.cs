@@ -16,7 +16,8 @@ namespace QocastPlayer.Receiver
     // Copy of OpenTuner's MediaSources\Minitiouner\NimThread.cs. Changes for the player:
     // - Stop() ends the thread cleanly (OpenTuner uses Thread.Abort)
     // - repeated read errors (tuner unplugged) end the thread and call hardware_lost
-    // - the second tuner (bottom demod) is not configured: the player uses tuner 1 only
+    // - tuner 2 (bottom demod) is configured only when a config for it is queued (PicoTuner); a MiniTiouner
+    //   only ever gets tuner 1. Each tuner has its own "reset" mark in the status.
     public class NimThread
     {
         // reads in a row that may fail before the tuner counts as gone (one read per 200 ms)
@@ -32,7 +33,9 @@ namespace QocastPlayer.Receiver
         private SourceStatusCallback status_callback;
         private Action hardware_lost;
 
-        bool reset = false;
+        // set after a tuner was configured; the next status read reports it (T1P2_reset / T2P1_reset) and clears both
+        bool reset1 = false;
+        bool reset2 = false;
 
         private volatile bool _stop = false;
         private readonly AutoResetEvent _wake = new AutoResetEvent(false);
@@ -97,7 +100,8 @@ namespace QocastPlayer.Receiver
 
             byte err = 0;
 
-            nim_status.T1P2_reset = reset;
+            nim_status.T1P2_reset = reset1;
+            nim_status.T2P1_reset = reset2;
 
             /*
             if (no_lna)
@@ -312,7 +316,8 @@ namespace QocastPlayer.Receiver
             status_callback?.Invoke(nim_status);
 
 
-            reset = false;
+            reset1 = false;
+            reset2 = false;
 
             return err;
         }
@@ -347,34 +352,50 @@ namespace QocastPlayer.Receiver
 
                 while (!_stop)
                 {
-                    // several tune requests waiting (fast clicking): only the newest counts
-                    TunerConfig nim_config = null;
+                    // several tune requests waiting (fast clicking): only the newest of each tuner counts
+                    TunerConfig newest1 = null;
+                    TunerConfig newest2 = null;
                     while (config_queue.TryDequeue(out TunerConfig queued))
-                        nim_config = queued;
-
-                    if (nim_config != null)
                     {
-                        err = apply_config(nim_config);
-
-                        if (err != 0)
-                        {
-                            Log.Information("****** Nim Thread: Hardware Error: " + err.ToString() + " ******");
-                            hw_errors += 1;
-                            if (hw_errors > 5)
-                            {
-                                Log.Information("Too many hardware errors");
-                                hardware_lost?.Invoke();
-                                return;
-                            }
-                        }
+                        if (queued.tuner == 2)
+                            newest2 = queued;
                         else
+                            newest1 = queued;
+                    }
+
+                    if (newest1 != null || newest2 != null)
+                    {
+                        foreach (TunerConfig nim_config in new[] { newest1, newest2 })
                         {
-                            Log.Information("Nim Thread: Nim Init Good");
-                            hw_errors = 0;
+                            if (nim_config == null)
+                                continue;
+
+                            err = apply_config(nim_config);
+
+                            if (err != 0)
+                            {
+                                Log.Information("****** Nim Thread: Hardware Error: " + err.ToString() + " ******");
+                                hw_errors += 1;
+                                if (hw_errors > 5)
+                                {
+                                    Log.Information("Too many hardware errors");
+                                    hardware_lost?.Invoke();
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                Log.Information("Nim Thread: Nim Init Good");
+                                hw_errors = 0;
+                            }
+
+                            if (nim_config.tuner == 2)
+                                reset2 = true;
+                            else
+                                reset1 = true;
                         }
 
                         configured = true;
-                        reset = true;
                     }
                     else if (!configured)
                     {
@@ -442,15 +463,19 @@ namespace QocastPlayer.Receiver
                     break;
             }
 
+            // tuner 1 uses the top demod (P2, TS2), tuner 2 the bottom demod (P1, TS1)
+            byte tuner = nim_config.tuner == 2 ? (byte)2 : (byte)1;
+            byte demod = tuner == 2 ? stv0910.STV0910_DEMOD_BOTTOM : stv0910.STV0910_DEMOD_TOP;
+
             // setup demod
-            Log.Information("Configure Demod Receive - " + nim_config.tuner);
-            err = _stv0910.stv0910_setup_receive(stv0910.STV0910_DEMOD_TOP, nim_config.symbol_rate);
+            Log.Information("Configure Demod Receive - " + tuner);
+            err = _stv0910.stv0910_setup_receive(demod, nim_config.symbol_rate);
 
             // configure tuner
             if (err == 0)
             {
-                Log.Information("Configure Tuner - " + nim_config.tuner.ToString());
-                err = _stv6120.stv6120_init(1, nim_config.frequency, nim_config.rf_input, nim_config.symbol_rate);
+                Log.Information("Configure Tuner - " + tuner.ToString());
+                err = _stv6120.stv6120_init(tuner, nim_config.frequency, nim_config.rf_input, nim_config.symbol_rate);
             }
             else
             {
@@ -460,8 +485,8 @@ namespace QocastPlayer.Receiver
             // demod - start scan
             if (err == 0)
             {
-                Log.Information("Demod Start Scan - " + nim_config.tuner.ToString());
-                err = _stv0910.stv0910_start_scan(stv0910.STV0910_DEMOD_TOP);
+                Log.Information("Demod Start Scan - " + tuner.ToString());
+                err = _stv0910.stv0910_start_scan(demod);
             }
             else
             {

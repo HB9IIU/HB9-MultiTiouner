@@ -88,9 +88,7 @@ namespace QocastPlayer
                 ftdiProblem = ex;
             }
 
-            MiniTiounerDevice pico = PicoTunerDiscovery.Discover();
-            if (pico != null)
-                found.Add(pico);
+            found.AddRange(PicoTunerDiscovery.Discover());      // the two tuners of a PicoTuner, if there is one
             MiniTiounerDevice[] devices = found.ToArray();
 
             if (devices.Length == 0 && ftdiProblem != null)
@@ -146,7 +144,7 @@ namespace QocastPlayer
             {
                 foreach (MiniTiounerDevice device in devices)
                 {
-                    var receiver = new ReceiverService(config, device.Serial, device.IsPicoTuner);
+                    var receiver = new ReceiverService(config, device.Serial, device.PicoTuner);
                     receivers.Add(receiver);
                     receiver.Start();
                 }

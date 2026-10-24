@@ -28,7 +28,7 @@ namespace QocastPlayer.Receiver
 
         private readonly PlayerConfig _config;
         private readonly string _deviceSerial;
-        private readonly bool _picoTuner;
+        private readonly int _picoTuner;       // 0 = MiniTiouner, 1 or 2 = that tuner of the PicoTuner
         private readonly object _lock = new object();
         private readonly ManualResetEvent _stopEvent = new ManualResetEvent(false);
         private Thread _supervisor;
@@ -55,7 +55,7 @@ namespace QocastPlayer.Receiver
         // raised on a worker thread
         public event Action<ReceiverState> StateChanged;
 
-        public ReceiverService(PlayerConfig config, string deviceSerial = null, bool picoTuner = false)
+        public ReceiverService(PlayerConfig config, string deviceSerial = null, int picoTuner = 0)
         {
             _config = config;
             _deviceSerial = deviceSerial;
@@ -223,10 +223,12 @@ namespace QocastPlayer.Receiver
         private sealed class Session
         {
             private readonly ReceiverService _owner;
+            private readonly TunerBoard _board;
             private readonly MTHardwareInterface _hardware;
-            private readonly ConcurrentQueue<TunerConfig> _configQueue = new ConcurrentQueue<TunerConfig>();
-            private readonly NimThread _nim;
-            private readonly Thread _nimThread;
+            private readonly int _tuner;            // 1 or 2: which tuner of the board this session drives
+            private readonly int _tsDevice;         // the transport stream of that tuner
+            private readonly Action _boardLost;
+            private readonly Action<TunerStatus> _boardStatus;
             private readonly Thread _tsThread;
             private readonly ManualResetEvent _lost = new ManualResetEvent(false);
             private readonly AutoResetEvent _tsWake = new AutoResetEvent(false);
@@ -248,20 +250,27 @@ namespace QocastPlayer.Receiver
             public string HardwareName { get; }
             public WaitHandle Lost { get { return _lost; } }
 
-            private Session(ReceiverService owner, MTHardwareInterface hardware, string name)
+            private Session(ReceiverService owner, TunerBoard board, int tuner)
             {
                 _owner = owner;
-                _hardware = hardware;
-                HardwareName = name;
+                _board = board;
+                _hardware = board.Hardware;
+                _tuner = tuner;
+                _tsDevice = tuner == 2 ? PicoTunerInterface.TS1 : PicoTunerInterface.TS2;
+                HardwareName = board.Name;
 
-                _nim = new NimThread(_configQueue, hardware, OnNimStatus, () => _lost.Set());
-                _nimThread = new Thread(_nim.worker_thread) { Name = "Nim", IsBackground = true };
-                _tsThread = new Thread(TsLoop) { Name = "TS", IsBackground = true };
+                _tsThread = new Thread(TsLoop) { Name = "TS" + tuner, IsBackground = true };
 
-                hardware.hw_ts_led(0, false);
-                hardware.hw_ts_led(1, false);
+                _hardware.hw_ts_led(0, false);
+                _hardware.hw_ts_led(1, false);
 
-                _nimThread.Start();
+                _boardLost = () => _lost.Set();
+                _boardStatus = status => OnNimStatus(TunerStatusView.For(status, _tuner));
+                board.Lost += _boardLost;
+                board.StatusRead += _boardStatus;
+                if (board.IsLost)       // it was lost before this session listened
+                    _lost.Set();
+
                 _tsThread.Start();
             }
 
@@ -279,7 +288,7 @@ namespace QocastPlayer.Receiver
                 Attempt[] attempts;
                 if (owner._deviceSerial != null)
                 {
-                    attempts = new[] { owner._picoTuner ? Attempt.PicoTuner : Attempt.MiniTiouner };
+                    attempts = new[] { owner._picoTuner > 0 ? Attempt.PicoTuner : Attempt.MiniTiouner };
                 }
                 else switch (owner._config.receiver_type)
                 {
@@ -290,15 +299,19 @@ namespace QocastPlayer.Receiver
 
                 foreach (Attempt attempt in attempts)
                 {
-                    Session session = TryOpen(owner, attempt);
-                    if (session != null)
-                        return session;
+                    TunerBoard board;
+                    if (attempt == Attempt.PicoTuner && owner._deviceSerial != null)
+                        board = TunerBoard.AcquirePico(() => TryOpen(owner, attempt));      // both tuners share one board
+                    else
+                        board = TryOpen(owner, attempt)?.Retain();
+                    if (board != null)
+                        return new Session(owner, board, owner._picoTuner == 2 ? 2 : 1);
                 }
                 Log.Information("Receiver: no tuner found");
                 return null;
             }
 
-            private static Session TryOpen(ReceiverService owner, Attempt attempt)
+            private static TunerBoard TryOpen(ReceiverService owner, Attempt attempt)
             {
                 MTHardwareInterface hardware = attempt == Attempt.PicoTuner
                     ? (MTHardwareInterface)new PicoTunerInterface()
@@ -330,7 +343,8 @@ namespace QocastPlayer.Receiver
                     }
 
                     Log.Information("Receiver: opening " + name + " (i2c " + i2c_port + ", ts " + ts_port + ")");
-                    // second stream port (tuner 2) is not opened: the player uses tuner 1 only
+                    // MiniTiouner: the second stream port (tuner 2) is not opened, the player uses its tuner 1 only.
+                    // PicoTuner: hw_init opens both streams whatever the arguments.
                     err = hardware.hw_init(i2c_port, ts_port, 99);
                     if (err != 0)
                     {
@@ -340,7 +354,7 @@ namespace QocastPlayer.Receiver
                         return null;
                     }
 
-                    return new Session(owner, hardware, name);
+                    return new TunerBoard(hardware, name);
                 }
                 catch (Exception ex)
                 {
@@ -364,7 +378,7 @@ namespace QocastPlayer.Receiver
 
                 var tunerConfig = new TunerConfig
                 {
-                    tuner = 1,
+                    tuner = (byte)_tuner,
                     frequency = request.IfKhz,
                     symbol_rate = request.SymbolRateKsps,
                     rf_input = inputB ? nim.NIM_INPUT_BOTTOM : nim.NIM_INPUT_TOP,
@@ -381,8 +395,8 @@ namespace QocastPlayer.Receiver
                 _locked = false;
                 _owner.SetState(ReceiverState.Tuning);
 
-                _configQueue.Enqueue(tunerConfig);
-                _nim.Wake();
+                _board.ConfigQueue.Enqueue(tunerConfig);
+                _board.Wake();
             
                 }
             }
@@ -422,7 +436,7 @@ namespace QocastPlayer.Receiver
 
                 _locked = locked;
                 Log.Information("Receiver: lock " + (locked ? "on" : "off"));
-                _hardware.hw_ts_led(0, locked);
+                _hardware.hw_ts_led(_tuner - 1, locked);
 
                 if (locked)
                     StartStreaming();
@@ -492,7 +506,7 @@ namespace QocastPlayer.Receiver
                         if (!reading)
                         {
                             // throw away what the tuner buffered before the lock
-                            _hardware.transport_flush(PicoTunerInterface.TS2);
+                            _hardware.transport_flush(_tsDevice);
                             _owner.Stream.Clear();
                             _owner.TsTap?.Invoke(null, 0);
                             reading = true;
@@ -501,7 +515,7 @@ namespace QocastPlayer.Receiver
                         }
 
                         uint dataRead = 0;
-                        if (_hardware.transport_read(PicoTunerInterface.TS2, ref data, ref dataRead) != 0)
+                        if (_hardware.transport_read(_tsDevice, ref data, ref dataRead) != 0)
                         {
                             Thread.Sleep(10);
                             continue;
@@ -543,29 +557,15 @@ namespace QocastPlayer.Receiver
             {
                 _closing = true;
                 _streaming = false;
-                _nim.Stop();
+                _board.Lost -= _boardLost;
+                _board.StatusRead -= _boardStatus;
                 _tsWake.Set();
 
-                if (!_nimThread.Join(ThreadStopMs))
-                    Log.Warning("Receiver: nim thread did not stop in time");
                 if (!_tsThread.Join(ThreadStopMs))
                     Log.Warning("Receiver: TS thread did not stop in time");
 
-                try
-                {
-                    _hardware.hw_ts_led(0, false);
-                }
-                catch { }   // tuner may already be unplugged
-
-                try
-                {
-                    _hardware.hw_close();
-                }
-                catch (Exception ex)
-                {
-                    Log.Warning("Receiver: close: " + ex.Message);
-                }
-                Log.Information("Receiver: tuner released");
+                // the last session to let go stops the control thread and closes the hardware
+                _board.Release();
             }
         }
     }

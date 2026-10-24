@@ -29,6 +29,7 @@ namespace QocastPlayer.Receiver
         private readonly PlayerConfig _config;
         private readonly string _deviceSerial;
         private readonly int _picoTuner;       // 0 = MiniTiouner, 1 or 2 = that tuner of the PicoTuner
+        private readonly string _picoKey;      // which PicoTuner, when several are plugged in (see PicoTunerInterface)
         private readonly object _lock = new object();
         private readonly ManualResetEvent _stopEvent = new ManualResetEvent(false);
         private Thread _supervisor;
@@ -55,11 +56,12 @@ namespace QocastPlayer.Receiver
         // raised on a worker thread
         public event Action<ReceiverState> StateChanged;
 
-        public ReceiverService(PlayerConfig config, string deviceSerial = null, int picoTuner = 0)
+        public ReceiverService(PlayerConfig config, string deviceSerial = null, int picoTuner = 0, string picoKey = null)
         {
             _config = config;
             _deviceSerial = deviceSerial;
             _picoTuner = picoTuner;
+            _picoKey = picoKey;
             _parser = new TSParserThread(OnService);
         }
 
@@ -301,7 +303,7 @@ namespace QocastPlayer.Receiver
                 {
                     TunerBoard board;
                     if (attempt == Attempt.PicoTuner && owner._deviceSerial != null)
-                        board = TunerBoard.AcquirePico(() => TryOpen(owner, attempt));      // both tuners share one board
+                        board = TunerBoard.AcquirePico(owner._picoKey ?? "", () => TryOpen(owner, attempt));      // both tuners share one board
                     else
                         board = TryOpen(owner, attempt)?.Retain();
                     if (board != null)
@@ -314,7 +316,7 @@ namespace QocastPlayer.Receiver
             private static TunerBoard TryOpen(ReceiverService owner, Attempt attempt)
             {
                 MTHardwareInterface hardware = attempt == Attempt.PicoTuner
-                    ? (MTHardwareInterface)new PicoTunerInterface()
+                    ? (MTHardwareInterface)new PicoTunerInterface(owner._picoKey)
                     : owner._deviceSerial == null
                         ? (MTHardwareInterface)new FTDIInterface()
                         : new FTDIInterface(owner._deviceSerial);

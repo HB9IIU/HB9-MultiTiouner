@@ -14,11 +14,12 @@ namespace QocastPlayer.Receiver
     {
         private const int ThreadStopMs = 3000;
         private static readonly object PicoSync = new object();
-        private static TunerBoard _pico;
+        private static readonly System.Collections.Generic.Dictionary<string, TunerBoard> Picos = new System.Collections.Generic.Dictionary<string, TunerBoard>();
 
         private readonly NimThread _nim;
         private readonly Thread _nimThread;
         private int _users;                 // PicoSync must be held
+        private string _picoKey;            // set for a PicoTuner board; PicoSync must be held
         private volatile bool _lost;
 
         public MTHardwareInterface Hardware { get; }
@@ -63,23 +64,27 @@ namespace QocastPlayer.Receiver
             return this;
         }
 
-        // The board of the PicoTuner: the first caller opens it with `open`, the second one joins it.
+        // The board of one PicoTuner (`key` tells which one): the first caller opens it with `open`, the second one joins it.
         // null if it could not be opened, or if it was lost and is still being let go of by the other tuner
         // (the caller tries again later).
-        public static TunerBoard AcquirePico(Func<TunerBoard> open)
+        public static TunerBoard AcquirePico(string key, Func<TunerBoard> open)
         {
             lock (PicoSync)
             {
-                if (_pico != null && _pico._lost)
+                TunerBoard board;
+                Picos.TryGetValue(key, out board);
+                if (board != null && board._lost)
                     return null;
-                if (_pico == null)
+                if (board == null)
                 {
-                    _pico = open();
-                    if (_pico == null)
+                    board = open();
+                    if (board == null)
                         return null;
+                    board._picoKey = key;
+                    Picos[key] = board;
                 }
-                _pico._users++;
-                return _pico;
+                board._users++;
+                return board;
             }
         }
 
@@ -91,8 +96,9 @@ namespace QocastPlayer.Receiver
             {
                 _users--;
                 last = _users <= 0;
-                if (last && ReferenceEquals(_pico, this))
-                    _pico = null;
+                TunerBoard registered;
+                if (last && _picoKey != null && Picos.TryGetValue(_picoKey, out registered) && ReferenceEquals(registered, this))
+                    Picos.Remove(_picoKey);
             }
             if (last)
                 Close();

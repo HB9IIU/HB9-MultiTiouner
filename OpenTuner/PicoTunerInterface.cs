@@ -1,4 +1,4 @@
-﻿
+
 // mostly ported from longmynd - https://github.com/myorangedragon/longmynd - Heather Lomond
 
 using System;
@@ -18,13 +18,37 @@ namespace opentuner
     {
         const int USB_TIMEOUT = 5000;
 
-        static UsbDevice i2c_pt_device;
-        static UsbDevice ts_pt_device;
+        UsbDevice i2c_pt_device;
+        UsbDevice ts_pt_device;
 
-        static UsbEndpointWriter i2cEndPointWriter = null;
-        static UsbEndpointReader i2cEndPointReader = null;
-        static UsbEndpointReader ts2EndPointReader = null;
-        static UsbEndpointReader ts1EndPointReader = null;
+        UsbEndpointWriter i2cEndPointWriter = null;
+        UsbEndpointReader i2cEndPointReader = null;
+        UsbEndpointReader ts2EndPointReader = null;
+        UsbEndpointReader ts1EndPointReader = null;
+
+        // Which PicoTuner to open when several are plugged in: the part of the USB path that its i2c and TS
+        // interfaces share (for example "7&29532d75&0"). null = the first one found (old behaviour).
+        private readonly string _deviceKey;
+
+        // libusb is shut down when the last PicoTuner is closed, not when one of several is
+        private static int openDevices;
+        private static readonly object ExitSync = new object();
+        private bool _counted;
+
+        public PicoTunerInterface(string deviceKey = null)
+        {
+            _deviceKey = deviceKey;
+        }
+
+        // for the discovery, which must not shut libusb down under a PicoTuner that is open
+        public static void ExitIfUnused()
+        {
+            lock (ExitSync)
+            {
+                if (openDevices == 0)
+                    UsbDevice.Exit();
+            }
+        }
 
         public const byte TS1 = 0;
         public const byte TS2 = 1;
@@ -33,14 +57,14 @@ namespace opentuner
         const uint ClockDivisor = 0x0095;
 
         // Sending and receiving
-        static uint NumBytesToSend = 0;
+        uint NumBytesToSend = 0;
         int NumBytesSent = 0;
-        static int NumBytesRead = 0;
-        static byte[] MPSSEbuffer = new byte[500];
-        static byte[] InputBuffer = new byte[500];
-        static byte[] InputBuffer2 = new byte[500];
-        static uint BytesAvailable = 0;
-        static byte I2C_Status = 0;
+        int NumBytesRead = 0;
+        byte[] MPSSEbuffer = new byte[500];
+        byte[] InputBuffer = new byte[500];
+        byte[] InputBuffer2 = new byte[500];
+        uint BytesAvailable = 0;
+        byte I2C_Status = 0;
         public bool Running = true;
 
         // we only have 1 port on picotuner for control (old FTDI AC Port)
@@ -651,13 +675,20 @@ namespace opentuner
         public override byte hw_init(uint i2c_device, uint ts_device, uint ts_device2)
         {
             byte err = 0;
+            if (!_counted)
+            {
+                _counted = true;
+                lock (ExitSync)
+                    openDevices++;
+            }
             UsbRegDeviceList allDevices = UsbDevice.AllDevices;
-
             foreach (UsbRegistry usbRegistry in allDevices)
             {
                 string Name = usbRegistry.Name;
                 if (Name.Contains("PicoTuner"))
                 {
+                    if (_deviceKey != null && usbRegistry.SymbolicName.IndexOf(_deviceKey, StringComparison.OrdinalIgnoreCase) < 0)
+                        continue;
                     if (Name.Contains("i2c"))
                     {
                         if (!usbRegistry.Open(out i2c_pt_device))
@@ -748,9 +779,18 @@ namespace opentuner
             i2cEndPointReader = null;
             ts1EndPointReader = null;
             ts2EndPointReader = null;
-            // Free usb resources.
+            // Free usb resources, once the last PicoTuner is closed.
             // This is necessary for libusb-1.0 and Linux compatibility.
-            UsbDevice.Exit();
+            if (_counted)
+            {
+                _counted = false;
+                lock (ExitSync)
+                {
+                    openDevices--;
+                    if (openDevices <= 0)
+                        UsbDevice.Exit();
+                }
+            }
         }
 
         byte gpio_write(byte pin_id, bool pin_value)

@@ -144,7 +144,7 @@ namespace QocastPlayer
             {
                 foreach (MiniTiounerDevice device in devices)
                 {
-                    var receiver = new ReceiverService(config, device.Serial, device.PicoTuner);
+                    var receiver = new ReceiverService(config, device.Serial, device.PicoTuner, device.PicoKey);
                     receivers.Add(receiver);
                     receiver.Start();
                 }

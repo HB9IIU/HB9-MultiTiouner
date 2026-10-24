@@ -19,6 +19,10 @@
 >
 > To use a PicoTuner, its two USB interfaces ("PicoTuner i2c" and "PicoTuner TS") must be bound to the WinUSB driver (for example with Zadig). Only one program can use a PicoTuner at a time, so close OpenTuner first.
 
+![HB9 MultiTiouner 0.2.0 with three MiniTiouners and four PicoTuner tuners](docs/images/main-picotuner.png)
+
+*Version 0.2.0 with three MiniTiouners (cards 1 to 3, real QO-100 stations) and the four tuners of two PicoTuners (cards 4 to 7). The four PicoTuner cards show the test picture of PicoTuner emulators, not a real PicoTuner receiving a signal.*
+
 ## Why this exists
 
 HB9 MultiTiouner grew out of my project [SDR-Tiouner](https://github.com/HB9IIU/SDR-Tiouner). Radio amateurs who own **several MiniTiouners but no wideband SDR radio** asked me for the same, or a similar, web experience. This is it: one page that shows the QO-100 wideband spectrum, receives with all your MiniTiouners at the same time, and shows every picture in your browser.

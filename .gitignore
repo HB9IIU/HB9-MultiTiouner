@@ -16,9 +16,5 @@ streamout.json
 tuner-numbers.json
 player.json
 
-# the big third-party programs go into the release zip only (see NOTICE.md)
-tools/ffmpeg/ffmpeg.exe
-tools/mediamtx/mediamtx.exe
 
-# personal notes
-ZZ_START.txt
+

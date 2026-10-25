@@ -1,0 +1,2 @@
+dotnet build .\HB9-MultiTiouner.csproj -c Release
+.\bin\Release\HB9-MultiTiouner.exe
